@@ -1,0 +1,31 @@
+{
+  "name": "express-scaffold",
+  "version": "0.0.1",
+  "description": "a simple MVC scaffold of Express project for production",
+  "logo":"http://ww3.sinaimg.cn/large/61ff0de3jw1e91jmudlz8j201o01o0sj.jpg",
+  "main": "server.js",
+  "author": "turing",
+  "license": "MIT",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/turingou/express-scaffold.git"
+  },
+  "bugs": {
+    "url": "https://github.com/turingou/express-scaffold/issues"
+  },
+  "keywords": [
+    "express",
+    "scaffold",
+    "mvc"
+  ],  
+  "dependencies": {
+    "express": "3.3.1",
+    "jade": "*",
+    "less-middleware": "*",
+    "connect-mongo":"*",
+    "mongoose": "*"
+  }
+}
