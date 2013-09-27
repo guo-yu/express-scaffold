@@ -3,12 +3,12 @@
 a simple MVC scaffold of Express project for production by [turing](https://npmjs.org/~turing) 
 
 ### Installation
-install via NPM:
+install via NPM (Recommend):
 ````
 $ sudo npm install express-scaffold -g
 $ mkdir my-project && cd my-project
+// will install deps and clear files for you
 $ express-scaffold
-$ cp app.sample.js app.js
 $ vi app.js
 ````
 install via Github:
