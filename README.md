@@ -3,10 +3,18 @@
 a simple MVC scaffold of Express project for production by [turing](https://npmjs.org/~turing) 
 
 ### Installation
+install via NPM:
 ````
-$ git clone https://github.com/turingou/express-scaffold.git
-$ cp -r ./express-scaffold ./my-project
-$ cd my-project
+$ sudo npm install express-scaffold -g
+$ mkdir my-project && cd my-project
+$ express-scaffold
+$ cp app.sample.js app.js
+$ vi app.js
+````
+install via Github:
+````
+$ mkdir my-project && cd my-project
+$ git clone https://github.com/turingou/express-scaffold.git .
 $ cp app.sample.js app.js
 $ vi app.js
 ````
