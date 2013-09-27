@@ -30,8 +30,7 @@ app.js is your main script which is also a Server instance:
 var server = require('./server');
 
 new server({
-    env: 'production',
-    url: 'http://abc.com',
+    name 'myApp',
     database: {
         name: 'expressdemo'
     }
@@ -43,11 +42,21 @@ just set `env` when creating server instance:
 var server = require('./server');
 
 new server({
+    name 'myApp',
+    // set env to production
     env: 'production',
     // url should be provided. check it out in res.locals.root
     url: 'http://abc.com',
     database: {
-        name: 'expressdemo'
+        name: 'expressdemo',
+        host: 'http://remoteDB',
+        port: 27111,
+        // check it out: 
+        // http://mongoosejs.com/docs/api.html#index_Mongoose-createConnection
+        options: {
+            username: 'test',
+            password: 'testpassword'
+        }
     }
 }).run(9999);
 ````
