@@ -50,6 +50,27 @@ Ctrler.prototype.list = function(cb) {
     }
 }
 
+// list by page
+Ctrler.prototype.page = function(page, limit, params, cb) {
+    var self = this,
+        from = (page && page > 1) ? ((page - 1) * limit) : 0;
+    if (self.type) {
+        model[self.type].count(params).exec(function(err, count) {
+            if (!err) {
+                model[self.type].find(params).skip(from).limit(limit).exec(function(err,results){
+                    cb(err, results, {
+                        limit: limit,
+                        current: page ? page : 1,
+                        max: Math.round(count / limit)
+                    });
+                });
+            } else {
+                cb(err);
+            }
+        });
+    }
+}
+
 // advanced find
 Ctrler.prototype.find = function(params, cb) {
     if (this.type) {
