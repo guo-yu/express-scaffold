@@ -77,7 +77,6 @@ Server.prototype.run = function(port) {
     var defaultPort = 3000;
     this.app.set('port', (port && !isNaN(parseInt(port, 10))) ? parseInt(port, 10) : defaultPort);
     this.app.locals.root = (this.app.get('env') === 'production') ? this.params.url : 'http://localhost:' + this.app.get('port');
-    console.log(this.app.locals);
     http.createServer(this.app).listen(this.app.get('port'));
 }
 
