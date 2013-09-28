@@ -88,3 +88,12 @@ Ctrler.prototype.findOne = function(params, cb) {
         });
     }
 }
+
+// advanced query:
+// var demo = user.query('findOne',{name: 'demo'});
+// demo.select('sth'); demo.exec(function(err,result){});
+Ctrler.prototype.query = function(type, params) {
+    if (this.type) {
+        return model[this.type][type](params);
+    }
+}
