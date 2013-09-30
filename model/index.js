@@ -1,7 +1,7 @@
 // mongodb model
 var mongoose = require('mongoose'),
     Schema = mongoose.Schema,
-    database = require('../database'),
+    database = require('../database.json'),
     host = database.host ? database.host : 'localhost',
     dbname = database.name ? database.name : 'test',
     port = (database.port && !isNaN(parseInt(database.port, 10))) ? parseInt(database.port, 10) : 27017,
