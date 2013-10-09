@@ -97,3 +97,5 @@ Ctrler.prototype.query = function(type, params) {
         return model[this.type][type](params);
     }
 }
+
+module.exports = Ctrler;
