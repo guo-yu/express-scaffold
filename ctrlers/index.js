@@ -26,9 +26,11 @@ Ctrler.prototype.update = function(id, baby, cb) {
 
 // read single data by ObjectID
 Ctrler.prototype.read = function(id, cb) {
-    this.model.findById(id).exec(function(err, body) {
-        cb(err, body);
-    });
+    if (id && id.match(/^[0-9a-fA-F]{24}$/)) {
+        this.model.findById(id).exec(function(err, body) {
+            cb(err, body);
+        });
+    }
 }
 
 // list all collection
