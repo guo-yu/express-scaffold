@@ -1,3 +1,6 @@
-var Ctrler = require('./index');
+var Ctrler = require('./index'),
+    model = require('../model/index');
 
-module.exports = new Ctrler('user');
+var User = new Ctrler(model.user);
+
+module.exports = User;
