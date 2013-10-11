@@ -9,6 +9,12 @@ Ctrler.prototype.create = function(baby, callback) {
     });
 }
 
+Ctrler.prototype.read = function(id, callback) {
+    if (id && id.match(/^[0-9a-fA-F]{24}$/)) {
+        this.model.findById(id).exec(callback);
+    }
+}
+
 Ctrler.prototype.update = function(id, baby, callback) {
     this.model.findByIdAndUpdate(id, baby, callback);
 }
@@ -17,10 +23,10 @@ Ctrler.prototype.remove = function(id, callback) {
     this.model.findByIdAndRemove(id, callback);
 }
 
-Ctrler.prototype.read = function(id, callback) {
-    if (id && id.match(/^[0-9a-fA-F]{24}$/)) {
-        this.model.findById(id).exec(callback);
-    }
+Ctrler.prototype.count = function(params, callback) {
+    var cb = (!callback && typeof(params) === 'function') ? params : callback,
+        query = (params && typeof(params) === 'object') ? params : {};
+    this.model.count(query, cb);
 }
 
 Ctrler.prototype.list = function(params, callback) {
