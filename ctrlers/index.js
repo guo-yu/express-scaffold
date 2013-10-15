@@ -1,5 +1,9 @@
+var matcher = function(id) {
+    return (id && id.match(/^[0-9a-fA-F]{24}$/));
+}
+
 var Ctrler = function(model) {
-    this.model = (model) ? model : null;
+    this.model = model ? model : null;
 }
 
 Ctrler.prototype.create = function(baby, callback) {
@@ -9,18 +13,24 @@ Ctrler.prototype.create = function(baby, callback) {
     });
 }
 
-Ctrler.prototype.read = function(id, callback) {
-    if (id && id.match(/^[0-9a-fA-F]{24}$/)) {
-        this.model.findById(id).exec(callback);
-    }
+Ctrler.prototype.read = function(id, callback) {    
+    if (matcher(id)) this.model.findById(id).exec(callback);
 }
 
-Ctrler.prototype.update = function(id, baby, callback) {
-    this.model.findByIdAndUpdate(id, baby, callback);
+Ctrler.prototype.update = function(id, update, callback) {
+    if (matcher(id)) this.model.findByIdAndUpdate(id, update, callback);
+}
+
+Ctrler.prototype.findOneAndUpdate = function(id, update, callback) {
+    if (matcher(id)) this.model.findOneAndUpdate(id, update, callback);
 }
 
 Ctrler.prototype.remove = function(id, callback) {
-    this.model.findByIdAndRemove(id, callback);
+    if (matcher(id)) this.model.findByIdAndRemove(id, callback);
+}
+
+Ctrler.prototype.findOneAndRemove = function(id, callback) {
+    if (matcher(id)) this.model.findOneAndRemove(id, callback);
 }
 
 Ctrler.prototype.count = function(params, callback) {
@@ -51,23 +61,6 @@ Ctrler.prototype.page = function(page, limit, params, callback) {
             callback(err);
         }
     });
-}
-
-// advanced find
-Ctrler.prototype.find = function(params, callback) {
-    this.model.find(params).exec(callback);
-}
-
-// advanced findOne
-Ctrler.prototype.findOne = function(params, callback) {
-    this.model.findOne(params).exec(callback);
-}
-
-// advanced query:
-// var demo = user.query('findOne',{name: 'demo'});
-// demo.select('sth'); demo.exec(function(err,result){});
-Ctrler.prototype.query = function(type, params) {
-    return this.model[type](params);
 }
 
 module.exports = Ctrler;
