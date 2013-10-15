@@ -7,10 +7,7 @@ var Ctrler = function(model) {
 }
 
 Ctrler.prototype.create = function(baby, callback) {
-    var baby = new this.model(baby);
-    baby.save(function(err) {
-        callback(err, baby);
-    });
+    this.model.create(baby, callback);
 }
 
 Ctrler.prototype.read = function(id, callback) {    
@@ -21,7 +18,11 @@ Ctrler.prototype.update = function(id, update, callback) {
     if (matcher(id)) this.model.findByIdAndUpdate(id, update, callback);
 }
 
-Ctrler.prototype.findOneAndUpdate = function(id, update, callback) {
+Ctrler.prototype.updates = function(params, update, callback) {
+    if (matcher(id)) this.model.update(params, update, callback);
+}
+
+Ctrler.prototype.updateOne = function(id, update, callback) {
     if (matcher(id)) this.model.findOneAndUpdate(id, update, callback);
 }
 
@@ -29,8 +30,16 @@ Ctrler.prototype.remove = function(id, callback) {
     if (matcher(id)) this.model.findByIdAndRemove(id, callback);
 }
 
-Ctrler.prototype.findOneAndRemove = function(id, callback) {
+Ctrler.prototype.removes = function(params, callback) {
+    if (matcher(id)) this.model.remove(params, callback);
+}
+
+Ctrler.prototype.removeOne = function(id, callback) {
     if (matcher(id)) this.model.findOneAndRemove(id, callback);
+}
+
+Ctrler.prototype.populate = function(doc, params, callback) {
+    this.model.populate(doc, params, callback);
 }
 
 Ctrler.prototype.count = function(params, callback) {
