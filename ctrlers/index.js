@@ -6,11 +6,13 @@ var Ctrler = function(model) {
     this.model = model ? model : null;
 }
 
+Ctrler.prototype.checkId = matcher;
+
 Ctrler.prototype.create = function(baby, callback) {
     this.model.create(baby, callback);
 }
 
-Ctrler.prototype.read = function(id, callback) {    
+Ctrler.prototype.findById = function(id, callback) {    
     if (matcher(id)) this.model.findById(id).exec(callback);
 }
 
