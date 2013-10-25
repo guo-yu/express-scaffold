@@ -6,3 +6,4 @@ thumb
 *.log
 demo
 database.*
+public/css/style.css
