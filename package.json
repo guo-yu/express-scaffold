@@ -1,6 +1,6 @@
 {
   "name": "express-scaffold",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "a simple MVC scaffold of Express project for production",
   "logo":"http://ww3.sinaimg.cn/large/61ff0de3jw1e91jmudlz8j201o01o0sj.jpg",
   "main": "server.js",
@@ -26,7 +26,7 @@
     "express": "3.3.1",
     "jade": "*",
     "less-middleware": "*",
-    "connect-mongo":"*",
-    "mongoose": "*"
+    "mongoose": "*",
+    "member": "*"
   }
 }
