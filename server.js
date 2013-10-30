@@ -3,6 +3,7 @@ var express = require('express'),
     path = require('path'),
     MongoStore = require('connect-mongo')(express),
     less = require('less-middleware'),
+    Resource = require('express-resource'),
     json = require('./libs/json'),
     sys = require('./package.json'),
     errors = require('./middlewares/error');
