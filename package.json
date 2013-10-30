@@ -27,6 +27,7 @@
     "jade": "*",
     "less-middleware": "*",
     "mongoose": "*",
-    "member": "*"
+    "connect-mongo": "*",
+    "member":"*"
   }
 }
