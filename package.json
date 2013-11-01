@@ -1,6 +1,6 @@
 {
   "name": "express-scaffold",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "description": "a simple MVC scaffold of Express project for production",
   "logo":"http://ww3.sinaimg.cn/large/61ff0de3jw1e91jmudlz8j201o01o0sj.jpg",
   "main": "server.js",
