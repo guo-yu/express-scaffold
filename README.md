@@ -13,7 +13,7 @@ you could use express-scaffold in two different styles:
 1. Using it as server module
 
 sample code here:
-````
+````javascript
 var server = require('express-scaffold');
 
 // init a new server running on default port 3000
@@ -67,22 +67,27 @@ $ express-scaffold
 ````
 
 ### Configs
-just set `env` when creating server instance:
-````javascript
-var server = require('./server');
 
-new server({
-    name 'myApp',
+config param goes here:
+````javascript
+{
+    // site name
+    name : "site name",
+    // site desc
+    desc: 'demo site',
     // set env to production
     env: 'production',
     // url should be provided. check it out in res.locals.root
     url: 'http://abc.com',
+    // views dir:
+    views: './views',
+    // view engine:
+    "view engine": "jade",
+    // database configs
     database: {
         name: 'expressdemo',
         host: 'http://remoteDB',
         port: 27111,
-        // check it out: 
-        // http://mongoosejs.com/docs/api.html#index_Mongoose-createConnection
         options: {
             username: 'test',
             password: 'testpassword'
