@@ -1,50 +1,72 @@
 ## ![logo](http://ww3.sinaimg.cn/large/61ff0de3jw1e91jmudlz8j201o01o0sj.jpg) express-scaffold ![npm](https://badge.fury.io/js/express-scaffold.png)
 
-a simple MVC scaffold of Express project for production by [turing](https://npmjs.org/~turing) 
+a simple but sexy MVC wrapper of Express
 
 ### Installation
-install via NPM (Recommend):
 ````
-$ sudo npm install express-scaffold -g
-$ mkdir my-project && cd my-project
-// will install deps and clear files for you
-$ express-scaffold
-$ vi app.js
+$ npm install express-scaffold
 ````
-install via Github:
-````
-$ mkdir my-project && cd my-project
-$ git clone https://github.com/turingou/express-scaffold.git .
-$ cp app.sample.js app.js
-$ vi app.js
-````
-### Project structure
-this scaffold of Express provides a simple MVC structure:
-- ctrlers
-    - `index.js` a Ctrler factory which provides base database ctrler functions
-    - `user.js` a sample instance of base ctrler
-- views
-    - `layout.jade` main layout
-    - `error.jade` provides error interface
-- model
-    - `index.js` open database connection and define models(mongodb)
-- routes
-    - `*.js` app.js routers
-- public static files
 
-### Example App
-app.js is your main script which is also a Server instance:
-````javascript
-var server = require('./server');
+### Quick start
+you could use express-scaffold in two different styles:
 
+1. Using it as server module
+
+sample code here:
+````
+var server = require('express-scaffold');
+
+// init a new server running on default port 3000
 new server({
-    name 'myApp',
-    database: {
-        name: 'expressdemo'
-    }
-}).run();
+        name: 'demo site',
+        database: {
+            name: 'testdb'
+        }
+    })
+    .models(function($db, $Schema){
+        var userModel = new $Schema({
+            name: String,
+            created: Date,
+        });
+        return {
+            user: $db.model('user', userModel)
+        }
+    })
+    .ctrlers(function($models, $Ctrler){
+        return {
+            user: new $Ctrler($models.user)
+        }
+    })
+    .routes(function(app, $ctrlers){
+        app.get('/users', function(req, res, next){
+            $ctrlers.user.find({}, function(err, users){
+                res.json(users);
+            });
+        });
+    })
+    .run();
 ````
-### Publish to production
+
+2. Using it as project generator
+
+if you don't want to require core server, just make a copy and start server:
+````
+$ git clone https://github.com/turingou/express-scaffold.git
+$ cd express-scaffold
+$ vi ./configs/app.json
+$ node app.js
+````
+
+### Command-line tool
+
+use express-scaffold as cli tool to quick generate project files
+````
+$ [sudo] npm install express-scaffold -g
+$ mkdir demo-project && cd demo-project
+$ express-scaffold
+````
+
+### Configs
 just set `env` when creating server instance:
 ````javascript
 var server = require('./server');
@@ -70,8 +92,24 @@ new server({
 ````
 then `forever start app.js` or `pm2 start app.js -i max`
 
+### Project structure
+this scaffold of Express provides a simple MVC structure:
+- ctrlers
+    - `index.js` a Ctrler factory which provides base database ctrler functions
+- views
+    - all views in here
+- model
+    - `index.js` open database connection and define models(mongodb)
+- routes
+    - `*.js` app.js routers
+- public
+    - all static files locate here.
+
 ### API
-check this file: `index.js`
+
+- `/server.js`: init a server instance
+- `/models/index.js`: exports a mongodb instance
+- `/ctrlers/index.js`: exports a base ctrler (moogoose)
 
 ### Contributing
 - Fork this repo
