@@ -2,9 +2,9 @@ var fs = require('fs');
 
 exports.fetch = function(file) {
     try {
-        return JSON.parse(fs.readFileSync(file))
+        return JSON.parse(fs.readFileSync(file));
     } catch (err) {
-        throw err;
+        return null;
     }
 }
 

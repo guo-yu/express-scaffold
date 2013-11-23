@@ -1,4 +1,11 @@
-var errorRender = function(code, err, res) {
+exports.json = function(code, err, res) {
+    res.json(code, {
+        stat: 'error',
+        error: err
+    });
+}
+
+exports.render = function(code, err, res) {
     res.status(code);
     res.render('error', {
         code: code,
@@ -6,14 +13,6 @@ var errorRender = function(code, err, res) {
     });
 }
 
-var errorXhr = function(code, err, res) {
-    res.json(code, {
-        stat: 'error',
-        error: err
-    });
-}
-
-// choose a logger to save your errors
 exports.logger = function(err, req, res, next) {
     console.log(err);
     console.log(err.stack);
@@ -22,18 +21,14 @@ exports.logger = function(err, req, res, next) {
 
 exports.xhr = function(err, req, res, next) {
     if (req.xhr) {
-        errorXhr(500, err, res);
+        exports.json(200, err, res);
     } else {
         next(err);
     }
 }
 
 exports.common = function(err, req, res, next) {
-    if (err.message == '404') {
-        exports.notfound(req, res, next);
-    } else {
-        errorRender(500, err, res);
-    }
+    exports.render(500, err, res);
 }
 
 exports.notfound = function(req, res, next) {
@@ -43,10 +38,10 @@ exports.notfound = function(req, res, next) {
             res.send('404');
         },
         html: function() {
-            errorRender(404, req.url, res);
+            exports.render(404, req.url, res);
         },
         json: function() {
-            errorXhr(404, req.url, res);
+            exports.json(404, req.url, res);
         }
     });
 }

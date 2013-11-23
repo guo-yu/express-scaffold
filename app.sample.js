@@ -1,10 +1,27 @@
-var server = require('./server');
+var server = require('./server'),
+    configs = require('./configs/app.json');
 
-// init a new server running on port 3000
-new server({
-    name: 'demoApp',
-    desc: 'as you like',
-    database: {
-        name: 'expressdemo'
-    }
-}).run();
+// init a new server running on default port 3000
+new server(configs)
+    .models(function($db, $Schema){
+        var userModel = new $Schema({
+            name: String,
+            created: Date,
+        });
+        return {
+            user: $db.model('user', userModel)
+        }
+    })
+    .ctrlers(function($models, $Ctrler){
+        return {
+            user: new $Ctrler($models.user)
+        }
+    })
+    .routes(function(app, $ctrlers){
+        app.get('/users', function(req, res, next){
+            $ctrlers.user.find({}, function(err, users){
+                res.json(users);
+            });
+        });
+    })
+    .run();
