@@ -10,7 +10,7 @@ $ npm install express-scaffold
 ### Quick start
 you could use express-scaffold in two different styles:
 
-1. Using it as server module
+#### Using it as server module
 
 sample code here:
 ````javascript
@@ -47,7 +47,7 @@ new server({
     .run();
 ````
 
-2. Using it as project generator
+#### Using it as project generator
 
 if you don't want to require core server, just make a copy and start server:
 ````
