@@ -1,10 +1,10 @@
 var express = require('express'),
     http = require('http'),
     path = require('path'),
+    _ = require('underscore'),
     MongoStore = require('connect-mongo')(express),
     less = require('less-middleware'),
     Resource = require('express-resource'),
-    _ = require('underscore'),
     Depender = require('depender'),
     sys = require('./package.json'),
     json = require('./libs/json'),
@@ -28,12 +28,12 @@ var Server = function(configs) {
     app.use(express.logger(app.get('env') === 'development' ? 'dev' : logger.production));
     app.use(express.compress());
     app.use(express.limit(params.limit ? params.limit : '20mb'));
-    app.use(express.bodyParser({keepExtensions: true,uploadDir: path.join(__dirname, '/public/uploads')}));
+    app.use(express.bodyParser({keepExtensions: true, uploadDir: params.uploads ? path.resolve(__dirname , '../../', params.uploads) : path.join(__dirname, '/public/uploads')}));
     app.use(express.methodOverride());
     app.use(express.cookieParser(secret));
     app.use(express.session({ secret: secret, store: new MongoStore({ db: secret }) }));
-    app.use(less({src: path.join(__dirname, 'public')}));
-    app.use(express.static(path.join(__dirname, 'public')));
+    app.use(less({src: params.public ? path.resolve(__dirname , '../../', params.public) : path.join(__dirname, 'public')}));
+    app.use(express.static(params.public ? path.resolve(__dirname , '../../', params.public) : path.join(__dirname, 'public')));
     app.use(app.router);
 
     // errors
@@ -53,13 +53,12 @@ var Server = function(configs) {
 }
 
 Server.prototype.routes = function(init) {
-    var router = init ? init : require('./routes/index'),
-        app = this.app;
+    var router = init ? init : require('./routes/index');
     // define routes
     this.deps.define('app',this.app);
     this.deps.use(router);
     // 404
-    app.get('*', errors.notfound);
+    this.app.get('*', errors.notfound);
     return this;
 }
 
