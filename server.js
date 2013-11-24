@@ -5,6 +5,7 @@ var express = require('express'),
     less = require('less-middleware'),
     Resource = require('express-resource'),
     _ = require('underscore'),
+    Depender = require('depender'),
     sys = require('./package.json'),
     json = require('./libs/json'),
     errors = require('./middlewares/error'),
@@ -46,6 +47,7 @@ var Server = function(configs) {
 
     this.params = params;
     this.app = app;
+    this.deps = new Depender;
 
     return this;
 }
@@ -54,7 +56,8 @@ Server.prototype.routes = function(init) {
     var router = init ? init : require('./routes/index'),
         app = this.app;
     // define routes
-    router(app, this.ctrlers);
+    this.deps.define('app',this.app);
+    this.deps.use(router);
     // 404
     app.get('*', errors.notfound);
     return this;
@@ -62,12 +65,15 @@ Server.prototype.routes = function(init) {
 
 Server.prototype.models = function(init) {
     var models = require('./models/index');
-    this.models = init(models.db, models.Schema);
+    this.deps.define('$db',models.db);
+    this.deps.define('$Schema',models.Schema);
+    this.deps.define('$models', this.deps.use(init));
     return this;
 }
 
 Server.prototype.ctrlers = function(init) {
-    this.ctrlers = init(this.models, require('./ctrlers/index'));
+    this.deps.define('$Ctrler',require('./ctrlers/index'));
+    this.deps.define('$ctrlers', this.deps.use(init));
     return this;
 }
 

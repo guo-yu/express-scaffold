@@ -93,7 +93,7 @@ config param goes here:
             password: 'testpassword'
         }
     }
-}).run(9999);
+}
 ````
 then `forever start app.js` or `pm2 start app.js -i max`
 
