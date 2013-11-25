@@ -13,16 +13,25 @@ Ctrler.prototype.create = function(baby, callback) {
 }
 
 Ctrler.prototype.find = function(query, callback) {    
-    if (this.model) this.model.find(query).exec(callback);
+    if (this.model) {
+        if (query && callback) this.model.find(query).exec(callback);
+        if (query && !callback) return this.model.find(query);
+    }
 }
 
 Ctrler.prototype.findOne = function(query, callback) {    
-    if (this.model) this.model.findOne(query).exec(callback);
+    if (this.model) {
+        if (query && callback) this.model.findOne(query).exec(callback);
+        if (query && !callback) return this.model.findOne(query);
+    }
 }
 
 Ctrler.prototype.findById = function(id, callback) {    
     if (this.model) {
-        if (matcher(id)) this.model.findById(id).exec(callback);
+        if (matcher(id)) {
+            if (id && callback) this.model.findById(id).exec(callback);
+            if (id && !callback) return this.model.findById(id);
+        }
     }
 }
 
@@ -79,29 +88,43 @@ Ctrler.prototype.count = function(params, callback) {
 Ctrler.prototype.list = function(params, callback) {
     if (this.model) {
         var cb = (!callback && typeof(params) === 'function') ? params : callback,
-            query = (params && typeof(params) === 'object') ? params : {};
-        this.model.find(query).exec(cb);
+            query = (params && typeof(params) === 'object') ? params : {},
+            cursor = this.model.find(query);
+        if (cb) cursor.exec(cb);
+        if (typeof(params) !== 'function' && !callback) return cursor;
     }
 }
 
 Ctrler.prototype.page = function(page, limit, params, callback) {
     var self = this,
-        from = (page && page > 1) ? ((page - 1) * limit) : 0;
+        from = (page && page > 1) ? ((page - 1) * limit) : 0,
+        cursor = self.model.find(params).skip(from).limit(limit),
+        pager = {
+            limit: limit,
+            current: page ? page : 1
+        };
     if (this.model) {
         self.model.count(params).exec(function(err, count) {
             if (!err) {
-                self.model.find(params).skip(from).limit(limit).exec(function(err, results) {
-                    callback(err, results, {
-                        limit: limit,
-                        current: page ? page : 1,
-                        max: Math.round(count / limit)
+                if (callback && typeof(callback) === 'function') {
+                    pager.max = Math.round(count / limit);
+                    cursor.exec(function(err, results) {
+                        callback(err, results, pager);
                     });
-                });
+                }
             } else {
-                callback(err);
+                if (callback && typeof(callback) === 'function') {
+                    callback(err)
+                } else {
+                    throw err;
+                }
             }
         });
     }
+    return {
+        query: cursor,
+        pager: pager
+    };
 }
 
 module.exports = Ctrler;

@@ -11,4 +11,4 @@ exports.admin = (function() {
     } else {
         return exports.basic('admin','123');
     }
-})()
+})();
