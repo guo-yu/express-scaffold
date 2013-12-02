@@ -15,7 +15,8 @@ var Server = function(configs) {
 
     var app = express(),
         params = configs ? configs : {},
-        secret = params.database && params.database.name ? params.database.name : sys.name;
+        secret = params.database && params.database.name ? params.database.name : sys.name,
+        store = new MongoStore({ db: secret });
 
     if (params.database) json.save(path.join(__dirname, '/configs/database.json'), params.database);
 
@@ -31,7 +32,7 @@ var Server = function(configs) {
     app.use(express.bodyParser({keepExtensions: true, uploadDir: params.uploads ? path.resolve(__dirname , '../../', params.uploads) : path.join(__dirname, '/public/uploads')}));
     app.use(express.methodOverride());
     app.use(express.cookieParser(secret));
-    app.use(express.session({ secret: secret, store: new MongoStore({ db: secret }) }));
+    app.use(express.session({ secret: secret, store: store }));
     app.use(less({src: params.public ? path.resolve(__dirname , '../../', params.public) : path.join(__dirname, 'public')}));
     app.use(express.static(params.public ? path.resolve(__dirname , '../../', params.public) : path.join(__dirname, 'public')));
     app.use(app.router);
@@ -48,6 +49,7 @@ var Server = function(configs) {
     this.params = params;
     this.app = app;
     this.deps = new Depender;
+    this.deps.define('$sessionStore', store);
 
     return this;
 }
