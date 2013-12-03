@@ -8,7 +8,7 @@ var http = require('http'),
     MongoStore = require('connect-mongo')(express),
     sys = require('./package.json'),
     json = require('./libs/json'),
-    errors = require('./middlewares/error');
+    middlewares = require('./middlewares/index');
 
 var parentPath = function(dir) {
     return path.resolve(__dirname , '../../', dir);
@@ -53,9 +53,9 @@ var Server = function(configs) {
     app.use(app.router);
 
     // errors
-    app.use(errors.logger);
-    app.use(errors.xhr);
-    app.use(errors.common);
+    app.use(middlewares.error.logger);
+    app.use(middlewares.error.xhr);
+    app.use(middlewares.error.common);
 
     // locals
     app.locals.sys = sys;
@@ -65,6 +65,7 @@ var Server = function(configs) {
     this.app = app;
     this.deps = new Depender;
     this.deps.define('$mongoStore', mongoStore);
+    this.desp.define('$middlewares', middlewares);
 
     return this;
 }
@@ -75,7 +76,7 @@ Server.prototype.routes = function(init) {
     this.deps.define('app',this.app);
     this.deps.use(router);
     // 404
-    this.app.get('*', errors.notfound);
+    this.app.get('*', middlewares.error.notfound);
     return this;
 }
 
