@@ -1,40 +1,55 @@
-var express = require('express'),
-    http = require('http'),
+var http = require('http'),
     path = require('path'),
     _ = require('underscore'),
-    MongoStore = require('connect-mongo')(express),
+    express = require('express'),
+    Depender = require('depender'),
     less = require('less-middleware'),
     Resource = require('express-resource'),
-    Depender = require('depender'),
+    MongoStore = require('connect-mongo')(express),
     sys = require('./package.json'),
     json = require('./libs/json'),
-    errors = require('./middlewares/error'),
-    logger = require('./configs/log.json');
+    errors = require('./middlewares/error');
+
+var parentPath = function(dir) {
+    return path.resolve(__dirname , '../../', dir);
+};
+
+var defaults = {
+    port: 3000,
+    env: 'development',
+    views: path.join(__dirname, '/views'),
+    public: path.join(__dirname, 'public'),
+    uploads: path.join(__dirname, '/public/uploads'),
+    uploadsLimit: '20mb',
+    'view engine': 'jade',
+    log: ":remote-addr|:date|:method|:url|:status|:res[content-length]|:response-time|\":referrer\"|\":user-agent\""
+}
 
 var Server = function(configs) {
 
     var app = express(),
         params = configs ? configs : {},
         secret = params.database && params.database.name ? params.database.name : sys.name,
-        store = new MongoStore({ db: secret });
+        mongoStore = new MongoStore({ db: secret });
 
     if (params.database) json.save(path.join(__dirname, '/configs/database.json'), params.database);
 
     // all environments
-    app.set('port', (params.port && !isNaN(parseInt(params.port, 10))) ? parseInt(params.port, 10) : 3000);
-    app.set('env', params.env && typeof(params.env) == 'string' ? params.env : 'development');
-    app.set('views', params.views ? path.resolve(__dirname , '../../', params.views) : path.join(__dirname, '/views'));
-    app.set('view engine', params['view engine'] ? params['view engine'] : 'jade');
+    app.set('port', (params.port && !isNaN(parseInt(params.port, 10))) ? parseInt(params.port, 10) : defaults.port);
+    app.set('env', params.env ? params.env : defaults.env);
+    app.set('views', params.views ? parentPath(params.views) : defaults.views);
+    app.set('view engine', params['view engine'] ? params['view engine'] : defaults['view engine']);
+    app.set('log', params.log ? params.log : defaults.log);
     app.use(express.favicon());
-    app.use(express.logger(app.get('env') === 'development' ? 'dev' : logger.production));
+    app.use(express.logger(app.get('env') !== 'production' ? 'dev' : app.get('log')));
     app.use(express.compress());
-    app.use(express.limit(params.limit ? params.limit : '20mb'));
-    app.use(express.bodyParser({keepExtensions: true, uploadDir: params.uploads ? path.resolve(__dirname , '../../', params.uploads) : path.join(__dirname, '/public/uploads')}));
+    app.use(express.limit(params.uploadsLimit ? params.uploadsLimit : defaults.uploadsLimit));
+    app.use(express.bodyParser({keepExtensions: true, uploadDir: params.uploads ? parentPath(params.uploads) : defaults.uploads}));
     app.use(express.methodOverride());
     app.use(express.cookieParser(secret));
-    app.use(express.session({ secret: secret, store: store }));
-    app.use(less({src: params.public ? path.resolve(__dirname , '../../', params.public) : path.join(__dirname, 'public')}));
-    app.use(express.static(params.public ? path.resolve(__dirname , '../../', params.public) : path.join(__dirname, 'public')));
+    app.use(express.session({ secret: secret, store: mongoStore }));
+    app.use(less({src: params.public ? parentPath(params.public) : defaults.public }));
+    app.use(express.static(params.public ? parentPath(params.public) : defaults.public ));
     app.use(app.router);
 
     // errors
@@ -49,7 +64,7 @@ var Server = function(configs) {
     this.params = params;
     this.app = app;
     this.deps = new Depender;
-    this.deps.define('$sessionStore', store);
+    this.deps.define('$mongoStore', mongoStore);
 
     return this;
 }
@@ -78,11 +93,20 @@ Server.prototype.ctrlers = function(init) {
     return this;
 }
 
+Server.prototype.locals = function(key, value) {
+    if (this.app && key && value) this.app.locals[key] = value;
+    return this.app.locals;
+}
+
 Server.prototype.run = function(port) {
     if (_.isEmpty(this.app.routes)) this.routes();
     if (port && !isNaN(parseInt(port, 10))) this.app.set('port', parseInt(port, 10));
     this.app.locals.url = (this.app.get('env') === 'production') ? this.params.url : 'http://localhost:' + this.app.get('port');
-    http.createServer(this.app).listen(this.app.get('port'));
+    try {
+        http.createServer(this.app).listen(this.app.get('port'));
+    } catch (err) {
+        configs
+    }
     return this;
 }
 

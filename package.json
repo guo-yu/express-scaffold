@@ -1,10 +1,10 @@
 {
   "name": "express-scaffold",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "a simple but sexy MVC wrapper of Express",
   "logo":"http://ww3.sinaimg.cn/large/61ff0de3jw1e91jmudlz8j201o01o0sj.jpg",
   "main": "server.js",
-  "author": "turing",
+  "author": "turing <o.u.turing@gmail.com>",
   "license": "MIT",
   "bin": "./bin/cli.sh",
   "scripts": {
