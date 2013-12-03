@@ -65,7 +65,7 @@ var Server = function(configs) {
     this.app = app;
     this.deps = new Depender;
     this.deps.define('$mongoStore', mongoStore);
-    this.desp.define('$middlewares', middlewares);
+    this.deps.define('$middlewares', middlewares);
 
     return this;
 }
