@@ -102,11 +102,7 @@ Server.prototype.run = function(port) {
     if (_.isEmpty(this.app.routes)) this.routes();
     if (port && !isNaN(parseInt(port, 10))) this.app.set('port', parseInt(port, 10));
     this.app.locals.url = (this.app.get('env') === 'production') ? this.params.url : 'http://localhost:' + this.app.get('port');
-    try {
-        http.createServer(this.app).listen(this.app.get('port'));
-    } catch (err) {
-        configs
-    }
+    http.createServer(this.app).listen(this.app.get('port'));
     return this;
 }
 
