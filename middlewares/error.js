@@ -28,7 +28,11 @@ exports.xhr = function(err, req, res, next) {
 }
 
 exports.common = function(err, req, res, next) {
-    exports.render(500, err, res);
+    if (err.toString() == 'Error: 404') {
+        exports.notfound(req, res, next);
+    } else {
+        exports.render(500, err, res);
+    }
 }
 
 exports.notfound = function(req, res, next) {

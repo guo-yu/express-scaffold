@@ -1,7 +1,6 @@
 {
     "name": "just another express app",
     "desc": "some desciption here",
-    "env": "production",
     "database": {
         "name": "expressdemo"
     }
