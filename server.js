@@ -66,15 +66,14 @@ var Server = function(configs) {
     this.deps = new Depender;
     this.deps.define('$mongoStore', mongoStore);
     this.deps.define('$middlewares', middlewares);
+    this.deps.define('app', this.app);
 
     return this;
 }
 
 Server.prototype.routes = function(init) {
-    var router = init ? init : require('./routes/index');
     // define routes
-    this.deps.define('app',this.app);
-    this.deps.use(router);
+    this.deps.use(init && typeof(init) === 'function' ? init : require('./routes/index'));
     // 404
     this.app.get('*', middlewares.error.notfound);
     return this;
