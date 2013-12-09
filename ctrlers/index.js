@@ -98,31 +98,29 @@ Ctrler.prototype.list = function(params, callback) {
 Ctrler.prototype.page = function(page, limit, params, callback) {
     var self = this,
         from = (page && page > 1) ? ((page - 1) * limit) : 0,
-        cursor = self.model.find(params).skip(from).limit(limit),
+        mainCursor = self.model.find(params).skip(from).limit(limit),
+        countCursor = self.model.count(params),
         pager = {
             limit: limit,
             current: page ? page : 1
         };
     if (this.model) {
-        self.model.count(params).exec(function(err, count) {
-            if (!err) {
-                if (callback && typeof(callback) === 'function') {
+        if (callback && typeof(callback) === 'function') {
+            countCursor.exec(function(err, count) {
+                if (!err) {
                     pager.max = Math.round(count / limit);
-                    cursor.exec(function(err, results) {
+                    mainCursor.exec(function(err, results) {
                         callback(err, results, pager);
                     });
-                }
-            } else {
-                if (callback && typeof(callback) === 'function') {
-                    callback(err)
                 } else {
-                    throw err;
+                    callback(err);
                 }
-            }
-        });
+            });
+        }
     }
     return {
-        query: cursor,
+        query: mainCursor,
+        count: countCursor,
         pager: pager
     };
 }
