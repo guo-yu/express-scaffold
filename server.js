@@ -8,7 +8,8 @@ var http = require('http'),
     MongoStore = require('connect-mongo')(express),
     sys = require('./package.json'),
     json = require('./libs/json'),
-    middlewares = require('./middlewares/index');
+    middlewares = require('./middlewares/index'),
+    routes = require('./routes/index');
 
 var parentPath = function(dir) {
     return path.resolve(__dirname , '../../', dir);
@@ -23,7 +24,7 @@ var defaults = {
     uploadsLimit: '20mb',
     'view engine': 'jade',
     log: ":remote-addr|:date|:method|:url|:status|:res[content-length]|:response-time|\":referrer\"|\":user-agent\""
-}
+};
 
 var Server = function(configs) {
 
@@ -60,25 +61,18 @@ var Server = function(configs) {
     // locals
     app.locals.sys = sys;
     app.locals.site = params;
+    app.locals.url = ('production' === app.get('env')) ? params.url : 'http://localhost:' + app.get('port');
 
     this.params = params;
     this.app = app;
     this.deps = new Depender;
     this.deps.define('$mongoStore', mongoStore);
     this.deps.define('$middlewares', middlewares);
-    this.deps.define('app', this.app);
 
     return this;
 }
 
-Server.prototype.routes = function(init) {
-    // define routes
-    this.deps.use(init && typeof(init) === 'function' ? init : require('./routes/index'));
-    // 404
-    this.app.get('*', middlewares.error.notfound);
-    return this;
-}
-
+// define models
 Server.prototype.models = function(init) {
     var models = require('./models/index');
     this.deps.define('$db',models.db);
@@ -87,22 +81,33 @@ Server.prototype.models = function(init) {
     return this;
 }
 
+// define ctrlers
 Server.prototype.ctrlers = function(init) {
     this.deps.define('$Ctrler',require('./ctrlers/index'));
     this.deps.define('$ctrlers', this.deps.use(init));
     return this;
 }
 
+// inject app locals
 Server.prototype.locals = function(key, value) {
     if (this.app && key && value) this.app.locals[key] = value;
     return this.app.locals;
 }
 
+// define routes
+Server.prototype.routes = function(init) {
+    this.deps.define('app', this.app);
+    this.deps.use(init && typeof(init) === 'function' ? init : routes);
+    this.app.get('*', middlewares.error.notfound);
+    return this;
+}
+
+// start instance
 Server.prototype.run = function(port) {
-    if (_.isEmpty(this.app.routes)) this.routes();
-    if (port && !isNaN(parseInt(port, 10))) this.app.set('port', parseInt(port, 10));
-    this.app.locals.url = (this.app.get('env') === 'production') ? this.params.url : 'http://localhost:' + this.app.get('port');
-    http.createServer(this.app).listen(this.app.get('port'));
+    var app = this.app;
+    if (_.isEmpty(app.routes)) this.routes();
+    if (port && !isNaN(parseInt(port, 10))) app.set('port', parseInt(port, 10));
+    http.createServer(app).listen(app.get('port'));
     return this;
 }
 
