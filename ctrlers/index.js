@@ -43,7 +43,7 @@ Ctrler.prototype.update = function(id, update, callback) {
 
 Ctrler.prototype.updates = function(query, update, callback) {
     if (this.model) {
-        if (matcher(id)) this.model.update(query, update, callback);
+        this.model.update(query, update, callback);
     }
 }
 
