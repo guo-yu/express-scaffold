@@ -28,7 +28,7 @@ exports.xhr = function(err, req, res, next) {
 }
 
 exports.common = function(err, req, res, next) {
-    if (err.toString() == 'Error: 404') {
+    if (err.message === '404') {
         exports.notfound(req, res, next);
     } else {
         exports.render(500, err, res);
@@ -39,7 +39,7 @@ exports.notfound = function(req, res, next) {
     res.status(404);
     res.format({
         text: function() {
-            res.send('404');
+            res.send('404 Not found');
         },
         html: function() {
             exports.render(404, req.url, res);
