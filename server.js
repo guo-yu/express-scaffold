@@ -19,18 +19,14 @@ var defaults = {
     public: path.join(__dirname, '/public'),
     uploads: path.join(__dirname, '/public/uploads'),
     uploadsLimit: '20mb',
-    log: ":remote-addr|:date|:method|:url|:status|:res[content-length]|:response-time|\":referrer\"|\":user-agent\"",
-    database: {
-        name: sys.name
-    },
-    session: {
-        secret: sys.name
-    }
+    productionLog: ":remote-addr|:date|:method|:url|:status|:res[content-length]|:response-time|\":referrer\"|\":user-agent\"",
+    database: { name: sys.name },
+    session: { secret: sys.name }
 };
 
-var dirfinder = function(dir) {
-    if (dir) return path.resolve(__dirname , '../../', dir);
-    return defaults[dir];
+var dirfinder = function(configs, key) {
+    if (configs[key]) return path.resolve(__dirname , '../../', configs[key]);
+    return defaults[key];
 };
 
 var Server = function(configs) {
@@ -44,18 +40,18 @@ var Server = function(configs) {
     // all environments
     app.set('env', settings.env);
     app.set('port', _.isNumber(parseInt(settings.port)) ? parseInt(settings.port) : defaults.port);
-    app.set('views', dirfinder(configs.views));
+    app.set('views', dirfinder(configs,'views'));
     app.set('view engine', settings['view engine']);
     app.use(express.favicon());
-    app.use(express.logger('production' !== settings.env ? 'dev' : settings.log));
+    app.use(express.logger('production' !== settings.env ? 'dev' : settings.productionLog));
     app.use(express.compress());
     app.use(express.limit(settings.uploadsLimit));
     app.use(express.bodyParser({keepExtensions: true, uploadDir: configs.uploads ? parentPath(configs.uploads) : settings.uploads}));
     app.use(express.methodOverride());
     app.use(express.cookieParser(settings.session.secret));
     app.use(express.session(settings.session));
-    app.use(less({src: dirfinder(configs.public) }));
-    app.use(express.static(dirfinder(configs.public)));
+    app.use(less({src: dirfinder(configs,'public') }));
+    app.use(express.static(dirfinder(configs,'public')));
     app.use(app.router);
 
     // errors
