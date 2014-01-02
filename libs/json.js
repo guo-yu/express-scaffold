@@ -9,14 +9,11 @@ exports.fetch = function(file) {
 }
 
 exports.save = function(file, obj) {
-    if (obj && typeof(obj) == 'object') {
-        try {
-            fs.writeFileSync(file, JSON.stringify(obj));
-            return obj;
-        } catch (err) {
-            throw err;
-        }
-    } else {
-        return false;
+    if (!(obj && typeof(obj) === 'object')) return false;
+    try {
+        fs.writeFileSync(file, JSON.stringify(obj));
+        return obj;
+    } catch (err) {
+        throw err;
     }
 }
