@@ -5,7 +5,6 @@ var http = require('http'),
     Depender = require('depender'),
     less = require('less-middleware'),
     Resource = require('express-resource'),
-    MongoStore = require('connect-mongo')(express),
     sys = require('./package.json'),
     json = require('./libs/json'),
     middlewares = require('./middlewares/index'),
@@ -35,7 +34,7 @@ var Server = function(configs) {
         settings = _.extend(defaults, configs);
 
     if (settings.database) json.save(path.join(__dirname, '/configs/database.json'), settings.database);
-    if (settings.session.store) settings.session.store = new MongoStore({ db: settings.session.secret });
+    if (settings.session.store) settings.session.store = new require('connect-mongo')(express)({ db: settings.session.secret });
 
     // all environments
     app.set('env', settings.env);

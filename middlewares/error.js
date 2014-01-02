@@ -1,5 +1,5 @@
 exports.json = function(code, err, res) {
-    res.json(code, {
+    return res.json(code, {
         stat: 'error',
         error: err
     });
@@ -20,19 +20,13 @@ exports.logger = function(err, req, res, next) {
 }
 
 exports.xhr = function(err, req, res, next) {
-    if (req.xhr) {
-        exports.json(200, err, res);
-    } else {
-        next(err);
-    }
+    if (req.xhr) return exports.json(200, err, res);
+    next(err);
 }
 
 exports.common = function(err, req, res, next) {
-    if (err.message === '404') {
-        exports.notfound(req, res, next);
-    } else {
-        exports.render(500, err, res);
-    }
+    if (err.message === '404') return exports.notfound(req, res, next);
+    exports.render(500, err, res);
 }
 
 exports.notfound = function(req, res, next) {
