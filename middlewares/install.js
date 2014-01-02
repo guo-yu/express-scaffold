@@ -11,8 +11,7 @@ exports = module.exports = function(app, configModel) {
             if (installed) {
                 app.locals.site = configs;
                 app.enable('configed');
-                next();
-                return true;
+                return next();
             } else {
                 config.create(app.locals.site, function(err, c) {
                     if (!err) app.enable('configed');
