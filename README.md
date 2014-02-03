@@ -23,23 +23,23 @@ new server({
             name: 'testdb'
         }
     })
-    .models(function($db, $Schema){
-        var userModel = new $Schema({
+    .models(function(db, Schema){
+        var userModel = new Schema({
             name: String,
             created: Date,
         });
         return {
-            user: $db.model('user', userModel)
+            user: db.model('user', userModel)
         }
     })
-    .ctrlers(function($models, $Ctrler){
+    .ctrlers(function(models, Ctrler){
         return {
-            user: new $Ctrler($models.user)
+            user: new Ctrler(models.user)
         }
     })
-    .routes(function(app, $ctrlers){
+    .routes(function(app, ctrlers){
         app.get('/users', function(req, res, next){
-            $ctrlers.user.find({}, function(err, users){
+            ctrlers.user.find({}, function(err, users){
                 res.json(users);
             });
         });
@@ -77,11 +77,12 @@ config param goes here:
     desc: 'demo site',
     // set env to production
     env: 'production',
-    // url should be provided. check it out in res.locals.root
+    // url should be provided. check it out in res.locals.url
     url: 'http://abc.com',
     // views dir:
     views: './views',
     // view engine:
+    // default by jade
     "view engine": "jade",
     // database configs
     database: {
@@ -92,6 +93,10 @@ config param goes here:
             username: 'test',
             password: 'testpassword'
         }
+    },
+    // set a mongodb session store.
+    session: {
+        store: true
     }
 }
 ````
