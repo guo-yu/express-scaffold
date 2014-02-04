@@ -16,8 +16,9 @@ var http = require('http'),
 var Server = function(configs) {
 
     var app = express(),
-        settings = _.extend(defaults, configs);
+        settings = _.extend(_.clone(defaults), configs);
 
+    if (!settings.session.secret) settings.session.secret = defaults.session.secret;
     if (settings.database) json.save(path.join(__dirname, '/configs/database.json'), settings.database);
     if (settings.session.store) settings.session.store = new mongoStore({ db: settings.session.secret });
 
