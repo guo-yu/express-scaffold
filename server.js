@@ -83,7 +83,7 @@ Server.prototype.locals = function(key, value) {
 Server.prototype.routes = function(init) {
     this.deps.define('app', this.app);
     this.deps.use(init && typeof(init) === 'function' ? init : routes);
-    this.app.get('*', middlewares.error.notfound);
+    this.app.all('*', middlewares.error.notfound);
     return this;
 }
 
