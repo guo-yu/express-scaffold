@@ -10,7 +10,8 @@ exports.render = function(code, err, res) {
     res.status(code);
     return res.render('error', {
         code: code,
-        error: err
+        error: err,
+        static: ''
     });
 }
 
