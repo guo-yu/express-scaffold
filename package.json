@@ -21,7 +21,7 @@
     "express",
     "scaffold",
     "mvc"
-  ],  
+  ],
   "dependencies": {
     "jade": "~1.1.5",
     "underscore": "*",
@@ -30,6 +30,7 @@
     "express": "3.3.1",
     "connect-mongo": "~0.4.0",
     "express-resource": "~1.0.0",
-    "less-middleware": "~0.1.15"
+    "less-middleware": "~0.1.15",
+    "node-sass": "*"
   }
 }
