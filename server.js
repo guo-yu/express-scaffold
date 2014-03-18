@@ -4,6 +4,7 @@ var http = require('http'),
     express = require('express'),
     Depender = require('depender'),
     less = require('less-middleware'),
+    sass = require('node-sass').middleware,
     Resource = require('express-resource'),
     mongoStore = require('connect-mongo')(express),
     sys = require('./package.json'),
@@ -36,6 +37,7 @@ var Server = function(configs) {
     app.use(express.cookieParser(settings.session.secret));
     app.use(express.session(settings.session));
     app.use(less({src: finder(configs,'public') }));
+    app.use(sass({src: finder(configs,'public') }));
     app.use(express.static(finder(configs,'public')));
     app.use(app.router);
 
