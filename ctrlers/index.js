@@ -101,7 +101,7 @@ Ctrler.prototype.page = function(page, limit, params, callback) {
     if (!(callback && typeof(callback) === 'function')) return ret;
     return countCursor.exec(function(err, count) {
         if (err) return callback(err);
-        pager.max = Math.round(count / limit);
+        pager.max = Math.round((count + limit - 1) / limit);
         mainCursor.exec(function(err, results) {
             callback(err, results, pager);
         });
