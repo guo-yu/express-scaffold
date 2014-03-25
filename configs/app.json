@@ -1,7 +1,7 @@
 {
-    "name": "just another express app",
-    "desc": "some desciption here",
-    "database": {
-        "name": "expressdemo"
-    }
+  "name": "just another express app",
+  "desc": "some desciption here",
+  "database": {
+    "name": "expressdemo"
+  }
 }
