@@ -22,9 +22,9 @@ function Server(configs) {
   var app = express();
   var settings = _.extend(_.clone(defaults), configs);
 
-  if (!settings.session.secret) settings.session.secret = defaults.session.secret;
   if (settings.database) json.save(path.join(__dirname, '/configs/database.json'), settings.database);
   if (settings.session.store) settings.session.store = new mongoStore({ db: settings.database.name });
+  if (!settings.session.secret) settings.session.secret = settings.database.name;
   
   dirs.publics = finder(configs, 'public');
   dirs.uploads = finder(configs, 'uploads');
@@ -38,19 +38,12 @@ function Server(configs) {
   app.use(express.logger('production' !== settings.env ? 'dev' : settings.logformat));
   app.use(express.compress());
   app.use(express.limit(settings.limits));
-  app.use(express.bodyParser({
-    keepExtensions: true,
-    uploadDir: dirs.uploads
-  }));
+  app.use(express.bodyParser({ keepExtensions: true, uploadDir: dirs.uploads }));
   app.use(express.methodOverride());
   app.use(express.cookieParser(settings.session.secret));
   app.use(express.session(settings.session));
-  app.use(less({
-    src: dirs.publics
-  }));
-  app.use(sass({
-    src: dirs.publics
-  }));
+  app.use(less({ src: dirs.publics }));
+  app.use(sass({ src: dirs.publics }));
   app.use(express.static(dirs.publics));
   app.use(app.router);
 
