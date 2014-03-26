@@ -1,8 +1,7 @@
 {
   "name": "express-scaffold",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "a simple but sexy MVC wrapper of Express",
-  "logo":"http://ww3.sinaimg.cn/large/61ff0de3jw1e91jmudlz8j201o01o0sj.jpg",
   "main": "server.js",
   "author": "turing <o.u.turing@gmail.com>",
   "license": "MIT",
