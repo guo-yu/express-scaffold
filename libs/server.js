@@ -20,7 +20,7 @@ var mongoStore = require('connect-mongo')(express);
 **/
 var finder = require('./finder');
 var sys = require('../package.json');
-var model = require('../models/index');
+var db = require('../db/index');
 var ctrler = require('../ctrlers/index');
 var middlewares = require('../middlewares/index');
 var defaults = require('../configs/default');
@@ -43,10 +43,6 @@ function Server(configs) {
   var dirs = {};
   var app = express();
   var settings = _.extend(_.clone(defaults), configs);
-
-  if (settings.database) {
-    fs.writeJSON(path.join(__dirname, '/configs/db'), settings.database);
-  }
 
   if (settings.session.store) {
     settings.session.store = new mongoStore({ db: settings.database.name });
@@ -83,12 +79,18 @@ function Server(configs) {
 
   app.locals.sys = sys;
   app.locals.site = settings;
-  app.locals.url = ('production' === settings.env) ? settings.url : 'http://localhost:' + app.get('port');
+  app.locals.url = (settings.env === 'production') ? 
+    settings.url : 
+    'http://localhost:' + app.get('port');
 
   this.app = app;
   this.deps = new Depender;
   this.deps.define('middlewares', middlewares);
-  if (settings.session.store) this.deps.define('sessionStore', settings.session.store);
+  this._settings = settings;
+
+  if (settings.session.store) {
+    this.deps.define('sessionStore', settings.session.store);
+  }
 
   return this;
 }
@@ -100,8 +102,8 @@ function Server(configs) {
 *
 **/
 Server.prototype.models = function(init) {
-  this.deps.define('db', model.db);
-  this.deps.define('Schema', model.Schema);
+  this.deps.define('Schema', db.Schema);
+  this.deps.define('db', db.connect(this._settings.database));
   this.deps.define('models', this.deps.use(init));
   return this;
 }

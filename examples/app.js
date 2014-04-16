@@ -35,6 +35,7 @@ new Server({
   }
 })
 .routes(function(app, ctrlers) {
+  console.log(app.locals.site.name + ' is running');
   // finally, we're going to make all route work,
   // `routes` function contains all routes your app will invoke.
   app.get('/users', function(req, res, next){
