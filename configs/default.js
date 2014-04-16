@@ -1,7 +1,6 @@
-var path = require('path');
-var sys = require('../package.json');
+var pkg = require('../package.json');
 
-exports.defaults = {
+module.exports = {
   port: 3000,
   limits: '20mb',
   env: 'development',
@@ -12,15 +11,10 @@ exports.defaults = {
   logformat: ":remote-addr|:date|:method|:url|:status|:res[content-length]|" +
     ":response-time|\":referrer\"|\":user-agent\"",
   database: {
-    name: sys.name
+    name: pkg.name
   },
   session: {
-    secret: sys.name,
+    secret: pkg.name,
     store: false
   }
-};
-
-exports.finder = function(configs, key) {
-  if (configs[key]) return path.resolve(__dirname, '../../../', configs[key]);
-  return exports.defaults[key];
-};
+}

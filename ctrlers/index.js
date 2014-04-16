@@ -1,4 +1,3 @@
-// @brief: base ctrler
 module.exports = Ctrler;
 
 function Ctrler(model) {

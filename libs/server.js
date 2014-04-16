@@ -1,17 +1,17 @@
 var http = require('http');
 var path = require('path');
+var fs = require('fsplus');
 var _ = require('underscore');
 var express = require('express');
 var Depender = require('depender');
 var less = require('less-middleware');
 var sass = require('node-sass').middleware;
 var mongoStore = require('connect-mongo')(express);
-var sys = require('./package.json');
-var json = require('./libs/json');
-var routes = require('./routes/index');
-var middlewares = require('./middlewares/index');
-var defaults = require('./configs/defaults').defaults;
-var finder = require('./configs/defaults').finder;
+var finder = require('./finder');
+var sys = require('../package.json');
+var routes = require('../routes/index');
+var middlewares = require('../middlewares/index');
+var defaults = require('../configs/default');
 
 module.exports = Server;
 
@@ -21,9 +21,17 @@ function Server(configs) {
   var app = express();
   var settings = _.extend(_.clone(defaults), configs);
 
-  if (settings.database) json.save(path.join(__dirname, '/configs/database.json'), settings.database);
-  if (settings.session.store) settings.session.store = new mongoStore({ db: settings.database.name });
-  if (!settings.session.secret) settings.session.secret = settings.database.name;
+  if (settings.database) {
+    fs.writeJSON(path.join(__dirname, '/configs/db'), settings.database);
+  }
+
+  if (settings.session.store) {
+    settings.session.store = new mongoStore({ db: settings.database.name });
+  }
+
+  if (!settings.session.secret) {
+    settings.session.secret = settings.database.name;
+  }
   
   dirs.publics = finder(configs, 'public');
   dirs.uploads = finder(configs, 'uploads');
