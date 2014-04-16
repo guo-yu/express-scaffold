@@ -1,11 +1,10 @@
 {
   "name": "express-scaffold",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "description": "a simple but sexy MVC wrapper of Express",
   "main": "server.js",
   "author": "turing <o.u.turing@gmail.com>",
   "license": "MIT",
-  "bin": "./bin/cli.sh",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -18,6 +17,8 @@
   },
   "keywords": [
     "express",
+    "koa",
+    "framework",
     "scaffold",
     "mvc"
   ],

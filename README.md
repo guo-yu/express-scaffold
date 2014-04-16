@@ -1,125 +1,109 @@
 ## ![logo](http://ww3.sinaimg.cn/large/61ff0de3jw1e91jmudlz8j201o01o0sj.jpg) express-scaffold ![npm](https://badge.fury.io/js/express-scaffold.png)
 
-a simple but sexy MVC wrapper of Express
+express-scaffold is a simple but sexy MVC wrapper of Express, now supporting [Candy](https://github.com/turingou/candy) and more and more web projects based on Node.js.
 
 ### Installation
 ````
 $ npm install express-scaffold
 ````
-
 ### Quick start
-you could use express-scaffold in two different styles:
 
-#### Using it as server module
+We recommend using express-scaffold as a server module. by require express-scaffold, you could build a fast and stable website in just 1min.
 
-sample code here:
 ````javascript
-var server = require('express-scaffold');
+// require Server class
+var Server = require('express-scaffold');
 
-// init a new server running on default port 3000
-new server({
-        name: 'demo site',
-        database: {
-            name: 'testdb'
-        }
-    })
-    .models(function(db, Schema){
-        var userModel = new Schema({
-            name: String,
-            created: Date,
-        });
-        return {
-            user: db.model('user', userModel)
-        }
-    })
-    .ctrlers(function(models, Ctrler){
-        return {
-            user: new Ctrler(models.user)
-        }
-    })
-    .routes(function(app, ctrlers){
-        app.get('/users', function(req, res, next){
-            ctrlers.user.find({}, function(err, users){
-                res.json(users);
-            });
-        });
-    })
-    .run();
-````
-
-#### Using it as project generator
-
-if you don't want to require core server, just make a copy and start server:
-````
-$ git clone https://github.com/turingou/express-scaffold.git
-$ cd express-scaffold
-$ vi ./configs/app.json
-$ node app.js
-````
-
-### Command-line tool
-
-use express-scaffold as cli tool to quick generate project files
-````
-$ [sudo] npm install express-scaffold -g
-$ mkdir demo-project && cd demo-project
-$ express-scaffold
+// create app instance and chain all stuff together,
+// as you can see, express-scaffold injects models and ctrlers into
+// app instance, it is a convenience way to organize all resource and modules
+// which almost every route needs.
+new Server({
+  name: 'My very first App',
+  database: {
+    name: 'appdb'
+  }
+})
+.models(function(db, Schema) {
+  // init models
+  // express-scaffold using `mongoose` to abstract data-models
+  // the object returned will be injected to `ctrlers` and `routes` functions
+  var userModel = new Schema({
+    name: String,
+    created: Date,
+  });
+  return {
+    user: db.model('user', userModel)
+  }
+})
+.ctrlers(function(models, Ctrler) {
+  // init ctrlers
+  // express-scaffold will wrap all models into baseCtrler,
+  // which provides normal CRUS shortcuts function, e.g: 
+  // var user = new Ctrler(model.user);
+  // user.create()
+  // user.findById()
+  return {
+    user: new Ctrler(models.user)
+  }
+})
+.routes(function(app, ctrlers) {
+  // finally, we're going to make all route work,
+  // `routes` function contains all routes your app will invoke.
+  app.get('/users', function(req, res, next){
+    // using `user` ctrler we made before to find all users,
+    // and response with JSON string.
+    ctrlers.user.find({}, function(err, users) {
+      if (err) return next(err);
+      res.json(users);
+    });
+  });
+})
+.run();
 ````
 
 ### Configs
 
-config param goes here:
+all config params list below:
 ````javascript
 {
-    // site name
-    name : "site name",
-    // site desc
-    desc: 'demo site',
-    // set env to production
-    env: 'production',
-    // url should be provided. check it out in res.locals.url
-    url: 'http://abc.com',
-    // views dir:
-    views: './views',
-    // view engine:
-    // default by jade
-    "view engine": "jade",
-    // database configs
-    database: {
-        name: 'expressdemo',
-        host: 'http://remoteDB',
-        port: 27111,
-        options: {
-            username: 'test',
-            password: 'testpassword'
-        }
-    },
-    // set a mongodb session store.
-    session: {
-        store: true
+  // site name
+  name : "site name",
+  // site desc
+  desc: 'demo site',
+  // set env to production
+  env: 'production',
+  // url should be provided. check it out in res.locals.url
+  url: 'http://abc.com',
+  // views dir:
+  views: './views',
+  // view engine:
+  // default by jade
+  "view engine": "jade",
+  // database configs
+  database: {
+    name: 'expressdemo',
+    host: 'http://remoteDB',
+    port: 27111,
+    options: {
+      username: 'test',
+      password: 'testpassword'
     }
+  },
+  // set a mongodb session store.
+  session: {
+    store: true
+  }
 }
 ````
-then `forever start app.js` or `pm2 start app.js -i max`
-
-### Project structure
-this scaffold of Express provides a simple MVC structure:
-- ctrlers
-    - `index.js` a Ctrler factory which provides base database ctrler functions
-- views
-    - all views in here
-- model
-    - `index.js` open database connection and define models(mongodb)
-- routes
-    - `*.js` app.js routers
-- public
-    - all static files locate here.
 
 ### API
 
-- `/server.js`: init a server instance
-- `/models/index.js`: exports a mongodb instance
-- `/ctrlers/index.js`: exports a base ctrler (moogoose)
+#### new Server(configObject)
+#### server#models(db[, Schema])
+#### server#ctrlers(models[, Ctrler])
+#### server#routes(app[,ctrlers,[,models]])
+#### server#run(port)
 
 ### Contributing
 - Fork this repo

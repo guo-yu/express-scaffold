@@ -81,12 +81,6 @@ Server.prototype.ctrlers = function(init) {
   return this;
 }
 
-// inject app locals
-Server.prototype.locals = function(key, value) {
-  if (this.app && key && value) this.app.locals[key] = value;
-  return this.app.locals;
-}
-
 // define routes
 Server.prototype.routes = function(init) {
   this.deps.define('app', this.app);
