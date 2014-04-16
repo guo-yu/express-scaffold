@@ -1,3 +1,8 @@
+/**
+*
+* Global dependencies
+*
+**/
 var http = require('http');
 var path = require('path');
 var fs = require('fsplus');
@@ -7,14 +12,32 @@ var Depender = require('depender');
 var less = require('less-middleware');
 var sass = require('node-sass').middleware;
 var mongoStore = require('connect-mongo')(express);
+
+/**
+*
+* Local dependencies
+*
+**/
 var finder = require('./finder');
 var sys = require('../package.json');
-var routes = require('../routes/index');
+var model = require('../models/index');
+var ctrler = require('../ctrlers/index');
 var middlewares = require('../middlewares/index');
 var defaults = require('../configs/default');
 
+/**
+*
+* Expose main function
+*
+**/
 module.exports = Server;
 
+/**
+*
+* Server Class
+* @configs[Object]: the config object, see `./configs/default` for more info.
+*
+**/
 function Server(configs) {
 
   var dirs = {};
@@ -54,12 +77,10 @@ function Server(configs) {
   app.use(express.static(dirs.publics));
   app.use(app.router);
 
-  // errors
   app.use(middlewares.error.logger);
   app.use(middlewares.error.xhr);
   app.use(middlewares.error.common);
 
-  // locals
   app.locals.sys = sys;
   app.locals.site = settings;
   app.locals.url = ('production' === settings.env) ? settings.url : 'http://localhost:' + app.get('port');
@@ -72,31 +93,50 @@ function Server(configs) {
   return this;
 }
 
-// define models
+/**
+*
+* Define data models
+* @init[Function]: the callback function to return model object.
+*
+**/
 Server.prototype.models = function(init) {
-  var models = require('./models/index');
-  this.deps.define('db', models.db);
-  this.deps.define('Schema', models.Schema);
+  this.deps.define('db', model.db);
+  this.deps.define('Schema', model.Schema);
   this.deps.define('models', this.deps.use(init));
   return this;
 }
 
-// define ctrlers
+/**
+*
+* Define spec Ctrlers
+* @init[Function]: the callback function to return spec ctrlers.
+*
+**/
 Server.prototype.ctrlers = function(init) {
-  this.deps.define('Ctrler', require('./ctrlers/index'));
+  this.deps.define('Ctrler', ctrler);
   this.deps.define('ctrlers', this.deps.use(init));
   return this;
 }
 
-// define routes
+/**
+*
+* Define routes
+* @init[Function]: the callback function to inject routes into `app`.
+*
+**/
 Server.prototype.routes = function(init) {
   this.deps.define('app', this.app);
-  this.deps.use(init && typeof(init) === 'function' ? init : routes);
-  this.app.all('*', middlewares.error.notfound);
+  this.deps.use(init);
+  this.app.all('*', middlewares.error.notfound); // 404
   return this;
 }
 
-// start instance
+/**
+*
+* Start server instance
+* @port[Number]: on which port we'll start.
+*
+**/
 Server.prototype.run = function(port) {
   var app = this.app;
   if (_.isEmpty(app.routes)) this.routes();
