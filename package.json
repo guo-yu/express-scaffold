@@ -23,6 +23,7 @@
     "mvc"
   ],
   "dependencies": {
+    "fsplus": "*",
     "jade": "~1.1.5",
     "underscore": "*",
     "mongoose": "~3.8.6",

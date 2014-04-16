@@ -6,7 +6,7 @@ module.exports = function(config) {
 
   Config.check = function(callback) {
     this.findOne({}).exec(function(err, c) {
-      callback(err, !! c, c);
+      callback(err, !!c, c);
     });
   }
 
