@@ -5,7 +5,6 @@ var express = require('express');
 var Depender = require('depender');
 var less = require('less-middleware');
 var sass = require('node-sass').middleware;
-var Resource = require('express-resource');
 var mongoStore = require('connect-mongo')(express);
 var sys = require('./package.json');
 var json = require('./libs/json');

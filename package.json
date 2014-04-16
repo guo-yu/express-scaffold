@@ -1,7 +1,7 @@
 {
   "name": "express-scaffold",
   "version": "0.2.6",
-  "description": "a simple but sexy MVC wrapper of Express",
+  "description": "a simple sexy MVC wrapper of Express",
   "main": "server.js",
   "author": "turing <o.u.turing@gmail.com>",
   "license": "MIT",
@@ -26,11 +26,10 @@
     "fsplus": "*",
     "jade": "~1.1.5",
     "underscore": "*",
+    "express": "3.3.1",
     "mongoose": "~3.8.6",
     "depender": "0.0.1",
-    "express": "3.3.1",
     "connect-mongo": "~0.4.0",
-    "express-resource": "~1.0.0",
     "less-middleware": "~0.1.15",
     "node-sass": "*"
   }

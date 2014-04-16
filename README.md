@@ -1,6 +1,6 @@
 ## ![logo](http://ww3.sinaimg.cn/large/61ff0de3jw1e91jmudlz8j201o01o0sj.jpg) express-scaffold ![npm](https://badge.fury.io/js/express-scaffold.png)
 
-express-scaffold is a simple but sexy MVC wrapper of Express, now supporting [Candy](https://github.com/turingou/candy) and more and more web projects based on Node.js.
+a simple sexy MVC scaffold of Express, supporting [Candy](https://github.com/turingou/candy) and more and more web projects based on Node.js.
 
 ### Installation
 ````
@@ -98,7 +98,6 @@ all config params list below:
 ````
 
 ### API
-
 #### new Server(configObject)
 #### server#models(db[, Schema])
 #### server#ctrlers(models[, Ctrler])
