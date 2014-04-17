@@ -8,7 +8,7 @@ var path = require('path');
 var fs = require('fsplus');
 var _ = require('underscore');
 var express = require('express');
-var Depender = require('depender');
+var depender = require('depender');
 var less = require('less-middleware');
 var sass = require('node-sass').middleware;
 var mongoStore = require('connect-mongo')(express);
@@ -19,11 +19,11 @@ var mongoStore = require('connect-mongo')(express);
 *
 **/
 var finder = require('./finder');
-var sys = require('../package.json');
-var db = require('../db/index');
+var pkg = require('../package');
+var mongodb = require('../dbs/mongodb');
 var ctrler = require('../ctrlers/index');
 var middlewares = require('../middlewares/index');
-var defaults = require('../configs/default');
+var defaults = require('../configs');
 
 /**
 *
@@ -35,14 +35,16 @@ module.exports = Server;
 /**
 *
 * Server Class
-* @configs[Object]: the config object, see `./configs/default` for more info.
+* @configs[Object]: the config object, 
+* checkout `./configs/default.js` for more infomation.
 *
 **/
 function Server(configs) {
 
   var dirs = {};
+  var devMode = true;
   var app = express();
-  var settings = _.extend(_.clone(defaults), configs);
+  var settings = _.extend(_.clone(defaults), configs || {});
 
   if (settings.session.store) {
     settings.session.store = new mongoStore({ db: settings.database.name });
@@ -51,17 +53,23 @@ function Server(configs) {
   if (!settings.session.secret) {
     settings.session.secret = settings.database.name;
   }
-  
+
+  if (settings.env === 'production') devMode = false;
+
+  // find `views` and `public` abs path
+  dirs.views = finder(configs, 'views');
   dirs.publics = finder(configs, 'public');
   dirs.uploads = finder(configs, 'uploads');
 
-  // all environments
+  // setup server environments
   app.set('env', settings.env);
-  app.set('port', _.isNumber(parseInt(settings.port)) ? parseInt(settings.port) : defaults.port);
-  app.set('views', finder(configs, 'views'));
+  app.set('views', dirs.views);
   app.set('view engine', settings['view engine']);
+  app.set('port', _.isNumber(settings.port) ? settings.port : defaults.port);
+
+  // load all middlewares
   app.use(express.favicon());
-  app.use(express.logger('production' !== settings.env ? 'dev' : settings.logformat));
+  app.use(express.logger(devMode ? 'dev' : settings.logformat));
   app.use(express.compress());
   app.use(express.limit(settings.limits));
   app.use(express.bodyParser({ keepExtensions: true, uploadDir: dirs.uploads }));
@@ -72,21 +80,18 @@ function Server(configs) {
   app.use(sass({ src: dirs.publics }));
   app.use(express.static(dirs.publics));
   app.use(app.router);
-
   app.use(middlewares.error.logger);
   app.use(middlewares.error.xhr);
   app.use(middlewares.error.common);
 
-  app.locals.sys = sys;
+  app.locals.sys = pkg;
   app.locals.site = settings;
-  app.locals.url = (settings.env === 'production') ? 
-    settings.url : 
-    'http://localhost:' + app.get('port');
+  app.locals.url = devMode ? 'http://localhost:' + app.get('port') : settings.url
 
   this.app = app;
-  this.deps = new Depender;
+  this.deps = new depender;
   this.deps.define('middlewares', middlewares);
-  this._settings = settings;
+  this.settings = settings;
 
   if (settings.session.store) {
     this.deps.define('sessionStore', settings.session.store);
@@ -102,8 +107,8 @@ function Server(configs) {
 *
 **/
 Server.prototype.models = function(init) {
-  this.deps.define('Schema', db.Schema);
-  this.deps.define('db', db.connect(this._settings.database));
+  this.deps.define('Schema', mongodb.Schema);
+  this.deps.define('db', mongodb.connect(this.settings.database));
   this.deps.define('models', this.deps.use(init));
   return this;
 }
@@ -136,13 +141,12 @@ Server.prototype.routes = function(init) {
 /**
 *
 * Start server instance
-* @port[Number]: on which port we'll start.
+* @port[Number]: on which spec port we'll start.
 *
 **/
 Server.prototype.run = function(port) {
   var app = this.app;
-  if (_.isEmpty(app.routes)) this.routes();
-  if (port && _.isNumber(parseInt(port))) app.set('port', parseInt(port));
-  http.createServer(app).listen(app.get('port'));
-  return this;
+  var selectedPort = port && _.isNumber(port);
+  if (selectedPort) app.set('port', port);
+  return http.createServer(app).listen(app.get('port'));
 }
