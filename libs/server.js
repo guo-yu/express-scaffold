@@ -3,14 +3,19 @@
 * Global dependencies
 *
 **/
-var http = require('http');
-var path = require('path');
 var _ = require('underscore');
 var express = require('express');
+var csrf = require('csurf');
+var logger = require("morgan");
+var compress = require('compression');
+var methodOverride = require('method-override');
+var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
+var session = require('express-session');
 var depender = require('depender');
 var less = require('less-middleware');
 var sass = require('node-sass').middleware;
-var mongoStore = require('connect-mongo')(express);
+// var mongoStore = require('connect-mongo')(express);
 
 /**
 *
@@ -64,32 +69,31 @@ function Server(configs) {
 
   // find `views` and `public` abs path
   dirs.views = finder(configs, 'views');
-  dirs.publics = finder(configs, 'public');
+  dirs.publics = finder(configs, 'publics');
   dirs.uploads = finder(configs, 'uploads');
 
-  // setup server environments
+  // setup express settings
   app.set('env', settings.env);
   app.set('views', dirs.views);
   app.set('view engine', settings['view engine']);
   app.set('port', _.isNumber(settings.port) ? settings.port : defaults.port);
 
   // load all middlewares
-  app.use(express.favicon());
-  app.use(express.logger(devMode ? 'dev' : settings.logformat));
-  app.use(express.compress());
-  app.use(express.limit(settings.limits));
-  app.use(express.bodyParser({ keepExtensions: true, uploadDir: dirs.uploads }));
-  app.use(express.methodOverride());
-  app.use(express.cookieParser(settings.session.secret));
-  app.use(express.session(settings.session));
+  app.use(logger(devMode ? 'dev' : settings.logformat));
+  app.use(compress());
+  app.use(bodyParser({ keepExtensions: true, uploadDir: dirs.uploads }));
+  app.use(methodOverride());
+  app.use(cookieParser(settings.session.secret));
+  app.use(session(settings.session));
+  app.use(csrf());
   app.use(less({ src: dirs.publics }));
   app.use(sass({ src: dirs.publics }));
   app.use(express.static(dirs.publics));
-  app.use(app.router);
   app.use(middlewares.errors.logger);
   app.use(middlewares.errors.xhr);
   app.use(middlewares.errors.common);
 
+  // expose locals to template engine
   app.locals.sys = pkg;
   app.locals.site = settings;
   app.locals.url = devMode ? 'http://localhost:' + app.get('port') : settings.url
@@ -113,8 +117,8 @@ function Server(configs) {
 *
 **/
 Server.prototype.models = function(models) {
-  this.deps.define('Schema', mongodb.Schema);
-  this.deps.define('db', mongodb.connect(this.settings.database));
+  this.deps.define('Schema', dbs.mongodb.Schema);
+  this.deps.define('db', dbs.mongodb.connect(this.settings.database));
   this.deps.define('models', this.deps.use(models));
   return this;
 }
@@ -140,7 +144,7 @@ Server.prototype.ctrlers = function(controllers) {
 Server.prototype.routes = function(routes) {
   this.deps.define('app', this.app);
   this.deps.use(routes);
-  this.app.all('*', middlewares.error.notfound); // 404
+  this.app.all('*', middlewares.errors.notfound); // 404
   return this;
 }
 
@@ -154,5 +158,5 @@ Server.prototype.run = function(port) {
   var app = this.app;
   var selectedPort = port && _.isNumber(port);
   if (selectedPort) app.set('port', port);
-  return http.createServer(app).listen(app.get('port'));
+  return app.listen(app.get('port'));
 }

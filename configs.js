@@ -2,12 +2,13 @@ var path = require('path');
 var pkg = require('./package');
 var parent = path.resolve(__dirname, '../../');
 
-// the port we're going to start,
-// must be Number
+// the port we're going to start, must be Number
 exports.port = 3000;
 
 // upload limit
-exports.limits = '20mb';
+// by default, the limit is 20mb
+// NOTE: this middleware is currently no longer built in Express 4.x
+// exports.limits = '20mb';
 
 // the environment app runs on
 exports.env = 'development';
@@ -26,12 +27,12 @@ exports['view engine'] = 'jade';
 // by default, its where parent module locates
 exports.views = path.join(parent, './views');
 
-// the views folder dir,
+// the public folder dir,
 // must be abs dir,
 // by default, its where parent module locates
 exports.publics = path.join(parent, './public');
 
-// the views folder dir,
+// the uploads folder dir,
 // must be abs dir,
 // by default, its where parent module locates
 exports.uploads = path.join(parent, './public/uploads');

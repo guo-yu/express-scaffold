@@ -23,15 +23,22 @@
     "mvc"
   ],
   "dependencies": {
-    "jade": "~1.1.5",
+    "depender": "*",
     "underscore": "*",
-    "depender": "0.0.1",
-    "express": "3.3.1",
-    "mongoose": "~3.8.6",
-    "connect-mongo": "~0.4.0",
+    "express": "4.x",    
+    "csurf": "*",
+    "morgan": "*",
+    "compression": "*",
+    "body-parser": "*",
+    "cookie-parser": "*",
+    "method-override": "*",
+    "express-session": "*",
+    "express-passport": "*",
+    "express-common-errors": "*",
+    "jade": "~1.1.5",
     "node-sass": "*",
     "less-middleware": "~0.1.15",
-    "express-passport": "*",
-    "express-common-errors": "*"
+    "mongoose": "~3.8.6",
+    "connect-mongo": "~0.4.0"
   }
 }
