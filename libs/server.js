@@ -18,12 +18,21 @@ var mongoStore = require('connect-mongo')(express);
 * Local dependencies
 *
 **/
-var finder = require('./finder');
 var pkg = require('../package');
-var mongodb = require('../dbs/mongodb');
-var ctrler = require('../ctrlers/index');
-var middlewares = require('../middlewares/index');
+var finder = require('./finder');
 var defaults = require('../configs');
+
+var dbs = {};
+dbs.mongodb = require('../dbs/mongodb');
+
+var ctrlers = {};
+ctrlers.mongoose = require('../ctrlers/mongoose');
+
+var middlewares = {};
+middlewares.current = require('express-current');
+middlewares.passport = require('express-passport');
+middlewares.errors = require('express-common-errors');
+middlewares.installer = require('express-installer');
 
 /**
 *
@@ -80,9 +89,9 @@ function Server(configs) {
   app.use(sass({ src: dirs.publics }));
   app.use(express.static(dirs.publics));
   app.use(app.router);
-  app.use(middlewares.error.logger);
-  app.use(middlewares.error.xhr);
-  app.use(middlewares.error.common);
+  app.use(middlewares.errors.logger);
+  app.use(middlewares.errors.xhr);
+  app.use(middlewares.errors.common);
 
   app.locals.sys = pkg;
   app.locals.site = settings;
@@ -106,10 +115,10 @@ function Server(configs) {
 * @init[Function]: the callback function to return model object.
 *
 **/
-Server.prototype.models = function(init) {
+Server.prototype.models = function(models) {
   this.deps.define('Schema', mongodb.Schema);
   this.deps.define('db', mongodb.connect(this.settings.database));
-  this.deps.define('models', this.deps.use(init));
+  this.deps.define('models', this.deps.use(models));
   return this;
 }
 
@@ -119,9 +128,9 @@ Server.prototype.models = function(init) {
 * @init[Function]: the callback function to return spec ctrlers.
 *
 **/
-Server.prototype.ctrlers = function(init) {
-  this.deps.define('Ctrler', ctrler);
-  this.deps.define('ctrlers', this.deps.use(init));
+Server.prototype.ctrlers = function(controllers) {
+  this.deps.define('Ctrler', ctrlers.mongoose);
+  this.deps.define('ctrlers', this.deps.use(controllers));
   return this;
 }
 
@@ -131,9 +140,9 @@ Server.prototype.ctrlers = function(init) {
 * @init[Function]: the callback function to inject routes into `app`.
 *
 **/
-Server.prototype.routes = function(init) {
+Server.prototype.routes = function(routes) {
   this.deps.define('app', this.app);
-  this.deps.use(init);
+  this.deps.use(routes);
   this.app.all('*', middlewares.error.notfound); // 404
   return this;
 }

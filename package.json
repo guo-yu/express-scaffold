@@ -26,11 +26,14 @@
     "fsplus": "*",
     "jade": "~1.1.5",
     "underscore": "*",
+    "depender": "0.0.1",
     "express": "3.3.1",
     "mongoose": "~3.8.6",
-    "depender": "0.0.1",
     "connect-mongo": "~0.4.0",
+    "node-sass": "*",
     "less-middleware": "~0.1.15",
-    "node-sass": "*"
+    "express-passport": "*",
+    "express-installer": "*",
+    "express-common-errors": "*"
   }
 }
