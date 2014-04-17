@@ -15,7 +15,7 @@ var session = require('express-session');
 var depender = require('depender');
 var less = require('less-middleware');
 var sass = require('node-sass').middleware;
-// var mongoStore = require('connect-mongo')(express);
+var mongoStore = require('connect-mongo')({ session: session });
 
 /**
 *
