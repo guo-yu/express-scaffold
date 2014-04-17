@@ -23,7 +23,6 @@
     "mvc"
   ],
   "dependencies": {
-    "fsplus": "*",
     "jade": "~1.1.5",
     "underscore": "*",
     "depender": "0.0.1",
@@ -33,7 +32,6 @@
     "node-sass": "*",
     "less-middleware": "~0.1.15",
     "express-passport": "*",
-    "express-installer": "*",
     "express-common-errors": "*"
   }
 }

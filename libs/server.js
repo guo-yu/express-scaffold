@@ -5,7 +5,6 @@
 **/
 var http = require('http');
 var path = require('path');
-var fs = require('fsplus');
 var _ = require('underscore');
 var express = require('express');
 var depender = require('depender');
@@ -29,10 +28,8 @@ var ctrlers = {};
 ctrlers.mongoose = require('../ctrlers/mongoose');
 
 var middlewares = {};
-middlewares.current = require('express-current');
 middlewares.passport = require('express-passport');
 middlewares.errors = require('express-common-errors');
-middlewares.installer = require('express-installer');
 
 /**
 *
