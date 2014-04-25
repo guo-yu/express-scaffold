@@ -26,7 +26,6 @@
     "depender": "*",
     "underscore": "*",
     "express": "4.x",    
-    "csurf": "*",
     "morgan": "*",
     "compression": "*",
     "body-parser": "*",

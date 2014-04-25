@@ -5,7 +5,6 @@
 **/
 var _ = require('underscore');
 var express = require('express');
-var csrf = require('csurf');
 var logger = require("morgan");
 var compress = require('compression');
 var methodOverride = require('method-override');
@@ -85,7 +84,6 @@ function Server(configs) {
   app.use(methodOverride());
   app.use(cookieParser(settings.session.secret));
   app.use(session(settings.session));
-  app.use(csrf());
   app.use(less({ src: dirs.publics }));
   app.use(sass({ src: dirs.publics }));
   app.use(express.static(dirs.publics));
