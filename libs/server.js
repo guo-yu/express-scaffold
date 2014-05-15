@@ -98,6 +98,7 @@ function Server(configs) {
 
   this.app = app;
   this.deps = new depender;
+  this.deps.define('express', express);
   this.deps.define('middlewares', middlewares);
   this.settings = settings;
 
