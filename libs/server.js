@@ -89,9 +89,6 @@ function Server(configs) {
   app.use(less({ src: dirs.publics }));
   app.use(sass({ src: dirs.publics }));
   app.use(express.static(dirs.publics));
-  app.use(middlewares.errors.logger);
-  app.use(middlewares.errors.xhr);
-  app.use(middlewares.errors.common);
 
   // expose locals to template engine
   app.locals.sys = pkg;
@@ -145,6 +142,9 @@ Server.prototype.ctrlers = function(controllers) {
 Server.prototype.routes = function(routes) {
   this.deps.define('app', this.app);
   this.deps.use(routes);
+  this.app.use(middlewares.errors.logger);
+  this.app.use(middlewares.errors.xhr);
+  this.app.use(middlewares.errors.common);
   this.app.all('*', middlewares.errors.notfound); // 404
   return this;
 }

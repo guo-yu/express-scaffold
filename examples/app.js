@@ -7,6 +7,8 @@ var Server = require('../index');
 // which almost every route needs.
 new Server({
   name: 'My very first App',
+  publics: './public',
+  uploads: './uploads',
   database: {
     name: 'appdb'
   }
@@ -38,6 +40,9 @@ new Server({
   console.log(app.locals.site.name + ' is running');
   // finally, we're going to make all route work,
   // `routes` function contains all routes your app will invoke.
+  app.get('/', function(req ,res, next){
+    res.send('hi');
+  });
   app.get('/users', function(req, res, next){
     // using `user` ctrler we made before to find all users,
     // and response with JSON string.
@@ -45,6 +50,12 @@ new Server({
       if (err) return next(err);
       res.json(users);
     });
+  });
+  app.get('/errors', function(req, res, next){
+    next(new Error('I am a fake error'));
+  });
+  app.get('/fake404', function(req, res, next){
+    next(new Error(404));
   });
 })
 .run();

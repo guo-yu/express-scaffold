@@ -1,6 +1,6 @@
 {
   "name": "express-scaffold",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "a simple sexy MVC wrapper of Express",
   "main": "server.js",
   "author": "turing <o.u.turing@gmail.com>",
