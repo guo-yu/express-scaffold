@@ -9,6 +9,7 @@ var logger = require("morgan");
 var compress = require('compression');
 var methodOverride = require('method-override');
 var bodyParser = require('body-parser');
+var multer  = require('multer');
 var cookieParser = require('cookie-parser');
 var session = require('express-session');
 var depender = require('depender');
@@ -80,7 +81,8 @@ function Server(configs) {
   // load all middlewares
   app.use(logger(devMode ? 'dev' : settings.logformat));
   app.use(compress());
-  app.use(bodyParser({ keepExtensions: true, uploadDir: dirs.uploads }));
+  app.use(bodyParser());
+  app.use(multer({ dest: dirs.uploads }));
   app.use(methodOverride());
   app.use(cookieParser(settings.session.secret));
   app.use(session(settings.session));
