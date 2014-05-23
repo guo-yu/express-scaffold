@@ -13,10 +13,10 @@ new Server({
     name: 'appdb'
   }
 })
+// init models
+// express-scaffold using `mongoose` to abstract data-models
+// the object returned will be injected to `ctrlers` and `routes` functions
 .models(function(db, Schema) {
-  // init models
-  // express-scaffold using `mongoose` to abstract data-models
-  // the object returned will be injected to `ctrlers` and `routes` functions
   var userModel = new Schema({
     name: String,
     created: Date,
@@ -25,24 +25,32 @@ new Server({
     user: db.model('user', userModel)
   }
 })
+// init ctrlers
+// express-scaffold will wrap all models into baseCtrler,
+// which provides normal CRUS shortcuts function, e.g: 
+// var user = new Ctrler(model.user);
+// user.create()
+// user.findById()
 .ctrlers(function(models, Ctrler) {
-  // init ctrlers
-  // express-scaffold will wrap all models into baseCtrler,
-  // which provides normal CRUS shortcuts function, e.g: 
-  // var user = new Ctrler(model.user);
-  // user.create()
-  // user.findById()
   return {
     user: new Ctrler(models.user)
   }
 })
-.routes(function(app, ctrlers) {
-  console.log(app.locals.site.name + ' is running');
-  // finally, we're going to make all route work,
-  // `routes` function contains all routes your app will invoke.
-  app.get('/', function(req ,res, next){
+// finally, we're going to make all route work,
+// `routes` function contains all routes your app will invoke.
+.routes(function(app, ctrlers, express) {
+  console.log(app.locals.site.name + ' is running on http://localhost:' + app.locals.site.port);
+  // use new Router function in Express 4.x
+  var Home = express.Router();
+  Home.get('/', function(req, res, next){
+    res.send('It works');
+  });
+  app.use('/', Home);
+  // use app[Verb]
+  app.get('/hello', function(req ,res, next){
     res.send('hi');
   });
+  // find all users in database and return.
   app.get('/users', function(req, res, next){
     // using `user` ctrler we made before to find all users,
     // and response with JSON string.
@@ -51,10 +59,13 @@ new Server({
       res.json(users);
     });
   });
+  // throw a fake error
   app.get('/errors', function(req, res, next){
     next(new Error('I am a fake error'));
   });
-  app.get('/fake404', function(req, res, next){
+  // fake 404
+  // new Error(404) is a custome error which redirect user to a 404 page.
+  app.get('/404', function(req, res, next){
     next(new Error(404));
   });
 })
