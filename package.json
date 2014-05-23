@@ -1,6 +1,6 @@
 {
   "name": "express-scaffold",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "description": "a simple sexy MVC wrapper of Express",
   "main": "server.js",
   "author": "turing <o.u.turing@gmail.com>",
@@ -25,7 +25,7 @@
   "dependencies": {
     "depender": "*",
     "underscore": "*",
-    "express": "4.x",
+    "express": "4.2.0",
     "morgan": "*",
     "compression": "*",
     "body-parser": "*",
