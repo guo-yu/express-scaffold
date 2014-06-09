@@ -1,7 +1,7 @@
 module.exports = Ctrler;
 
 function Ctrler(model) {
-  this.model = model ? model : null;
+  this.model = model || null;
 }
 
 Ctrler.prototype.checkId = function(id) {
@@ -75,6 +75,28 @@ Ctrler.prototype.count = function(params, callback) {
   var cb = (!callback && typeof(params) === 'function') ? params : callback;
   var query = (params && typeof(params) === 'object') ? params : {};
   return this.model.count(query, cb);
+}
+
+Ctrler.prototype.newbies = function(key, type, callback) {
+  var today = new Date();
+  var hour = today.getHours();
+  var min = today.getMinutes();
+  var sec = today.getSeconds();
+  var month = today.getMonth();
+  var year = today.getFullYear();
+  var day = today.getDate();
+  var queryMap = {
+    day: new Date(year + ',' + month + ',' + day),
+    hour: new Date(year + ',' + month + ',' + day + ',' + hour + ',' + min + ',' + sec),
+    month: new Date(year + ',' + month),
+    year: new Date(year)
+  };
+  var query = {};
+  var keyparam = key || 'created';
+  query[keyparam] = {};
+  query[keyparam].$lt = today;
+  query[keyparam].$gt = type && queryMap[type] ? queryMap[type] : queryMap.day;
+  return this.count(query).exec(callback);
 }
 
 Ctrler.prototype.list = function(params, callback) {
