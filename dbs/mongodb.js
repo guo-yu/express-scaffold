@@ -1,7 +1,13 @@
-var pkg = require('../package');
+var _ = require('underscore');
 var mongoose = require('mongoose');
+var pkg = require('../package');
 
-exports.connect = function(database) {
+exports.Schema = mongoose.Schema;
+
+exports.connect = function(db) {
+  // if database is a mongodb:// URI, init by this URI.
+  if (isMongodbUri(db)) return mongoose.createConnection(db);
+  var database = _.isObject(db) ? db : {};
   var host = database.host || 'localhost';
   var dbname = database.name || pkg.name;
   var options = database.options || {};
@@ -9,4 +15,6 @@ exports.connect = function(database) {
   return mongoose.createConnection(host, dbname, port, options);
 }
 
-exports.Schema = mongoose.Schema;
+function isMongodbUri(str) {
+  return str && _.isString(str) && str.indexOf('mongodb://') === 0;
+}
