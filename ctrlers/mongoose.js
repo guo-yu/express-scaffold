@@ -82,14 +82,14 @@ Ctrler.prototype.newbies = function(key, type, callback) {
   var hour = today.getHours();
   var min = today.getMinutes();
   var sec = today.getSeconds();
-  var month = today.getMonth();
+  var month = today.getMonth() + 1;
   var year = today.getFullYear();
   var day = today.getDate();
   var queryMap = {
-    day: new Date(year + ',' + month + ',' + day),
-    hour: new Date(year + ',' + month + ',' + day + ',' + hour + ',' + min + ',' + sec),
-    month: new Date(year + ',' + month),
-    year: new Date(year)
+    year: new Date(year.toString()),
+    month: new Date(year,month),
+    day: new Date(year,month,day),
+    hour: new Date(year,month,day,hour,min,sec)
   };
   var query = {};
   var keyparam = key || 'created';
