@@ -42,12 +42,15 @@ exports.logformat = ":remote-addr|:date|:method|:url|:status|:res[content-length
 
 // the database information
 // by default, express-scaffold using moogoose as mongodb driver
+// a mongodb URI can be used to replace this object, e.g: 
+// exports.database = 'mongodb://user:pass@localhost:port/database';
 exports.database = {
   name: pkg.name
 }
 
 // the session infomation
 // by default, express-scaffold using connect-mongo to presist sessions.
+// this config param must be a Object.
 exports.session = {
   secret: pkg.name,
   // enable `session.store` to presist sessions,

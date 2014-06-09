@@ -9,6 +9,7 @@ new Server({
   name: 'My very first App',
   publics: './public',
   uploads: './uploads',
+  // database: 'mongodb://localhost:27017/appdb',
   database: {
     name: 'appdb'
   }

@@ -56,13 +56,15 @@ function Server(configs) {
   var devMode = true;
   var app = express();
   var settings = _.extend(_.clone(defaults), configs || {});
-
+  var dbname =  dbs.mongodb.isMongodbUri(settings.database) ? 
+      dbs.mongodb.parseDbname(settings.database) : settings.database.name;
+      
   if (settings.session.store) {
-    settings.session.store = new mongoStore({ db: settings.database.name });
+    settings.session.store = new mongoStore({ db: dbname });
   }
 
   if (!settings.session.secret) {
-    settings.session.secret = settings.database.name;
+    settings.session.secret = dbname;
   }
 
   if (settings.env === 'production') devMode = false;
