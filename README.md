@@ -71,9 +71,7 @@ all config params list below:
   // site name
   name : "site name",
   // site desc
-  desc: 'demo site',
-  // set env to production
-  env: 'production',
+  description: 'demo site',
   // url should be provided. check it out in res.locals.url
   url: 'http://abc.com',
   // views dir:
