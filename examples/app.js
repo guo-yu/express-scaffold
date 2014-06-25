@@ -40,7 +40,7 @@ new Server({
 // finally, we're going to make all route work,
 // `routes` function contains all routes your app will invoke.
 .routes(function(app, ctrlers, express) {
-  console.log(app.locals.site.name + ' is running on http://localhost:' + app.locals.site.port);
+  console.log(app.locals.site.name + ' is running on ' + app.locals.url);
   // use new Router function in Express 4.x
   var Home = express.Router();
   Home.get('/', function(req, res, next){

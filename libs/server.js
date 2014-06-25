@@ -53,8 +53,11 @@ module.exports = Server;
 function Server(configs) {
 
   var dirs = {};
-  var devMode = true;
   var app = express();
+
+  var env = process.env.NODE_ENV || 'development';
+  var devMode = !(env === 'production');
+
   var settings = _.extend(_.clone(defaults), configs || {});
   var dbname =  dbs.mongodb.isMongodbUri(settings.database) ? 
       dbs.mongodb.parseDbname(settings.database) : settings.database.name;
@@ -67,18 +70,16 @@ function Server(configs) {
     settings.session.secret = dbname;
   }
 
-  if (settings.env === 'production') devMode = false;
-
   // find `views` and `public` abs path
   dirs.views = finder(configs, 'views');
   dirs.publics = finder(configs, 'publics');
   dirs.uploads = finder(configs, 'uploads');
 
   // setup express settings
-  app.set('env', settings.env);
+  app.set('env', env);
   app.set('views', dirs.views);
   app.set('view engine', settings['view engine']);
-  app.set('port', _.isNumber(settings.port) ? settings.port : defaults.port);
+  app.set('port', process.env.PORT || 3000);
 
   // load all middlewares
   app.use(logger(devMode ? 'dev' : settings.logformat));
@@ -95,7 +96,7 @@ function Server(configs) {
   // expose locals to template engine
   app.locals.sys = pkg;
   app.locals.site = settings;
-  app.locals.url = devMode ? 'http://localhost:' + app.get('port') : settings.url
+  app.locals.url = devMode ? 'http://127.0.0.1:' + app.get('port') : settings.url
 
   this.app = app;
   this.deps = new depender;
@@ -154,12 +155,8 @@ Server.prototype.routes = function(routes) {
 /**
 *
 * Start server instance
-* @port[Number]: on which spec port we'll start.
 *
 **/
-Server.prototype.run = function(port) {
-  var app = this.app;
-  var selectedPort = port && _.isNumber(port);
-  if (selectedPort) app.set('port', port);
-  return app.listen(app.get('port'));
+Server.prototype.run = function() {
+  this.app.listen(this.app.get('port'));
 }

@@ -2,16 +2,10 @@ var path = require('path');
 var pkg = require('./package');
 var parent = path.resolve(__dirname, '../../');
 
-// the port we're going to start, must be Number
-exports.port = 3000;
-
 // upload limit
 // by default, the limit is 20mb
 // NOTE: this middleware is currently no longer built in Express 4.x
 // exports.limits = '20mb';
-
-// the environment app runs on
-exports.env = 'development';
 
 // the URI where app will be public
 // this url will be stored as `app.locals.url`,
