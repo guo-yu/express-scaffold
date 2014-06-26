@@ -170,3 +170,5 @@ Server.prototype.run = function() {
 
   return app.listen(app.get('port'));
 }
+
+Server.prototype.listen = Server.prototype.run;

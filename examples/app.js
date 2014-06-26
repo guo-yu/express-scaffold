@@ -75,4 +75,4 @@ new Server({
     next(new Error(404));
   });
 })
-.run();
+.listen();
