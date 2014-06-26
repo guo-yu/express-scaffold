@@ -24,6 +24,7 @@ var mongoStore = require('connect-mongo')({ session: session });
 **/
 var pkg = require('../package');
 var finder = require('./finder');
+var debug = require('./debug');
 var defaults = require('../configs');
 
 var dbs = {};
@@ -96,10 +97,12 @@ function Server(configs) {
   // expose locals to template engine
   app.locals.sys = pkg;
   app.locals.site = settings;
+  app.locals.settings = settings;
   app.locals.url = devMode ? 'http://127.0.0.1:' + app.get('port') : settings.url
 
   this.app = app;
   this.deps = new depender;
+  this.deps.define('debug', debug(settings.name));
   this.deps.define('express', express);
   this.deps.define('middlewares', middlewares);
   this.settings = settings;
@@ -158,5 +161,12 @@ Server.prototype.routes = function(routes) {
 *
 **/
 Server.prototype.run = function() {
-  this.app.listen(this.app.get('port'));
+  var app = this.app;
+  var log = debug(this.settings.name)('http');
+
+  log('is running on : %s', app.locals.url);
+  log('NODE_ENV      : %s', app.get('env'));
+  log('PORT          : %s', app.get('port'));
+
+  return app.listen(app.get('port'));
 }
