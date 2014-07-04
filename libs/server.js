@@ -81,6 +81,7 @@ function Server(configs) {
   app.set('views', dirs.views);
   app.set('view engine', settings['view engine']);
   app.set('port', process.env.PORT || 3000);
+  if (devMode) app.set('view cache', false);
 
   // load all middlewares
   app.use(logger(devMode ? 'dev' : settings.logformat));
@@ -90,7 +91,7 @@ function Server(configs) {
   app.use(methodOverride());
   app.use(cookieParser(settings.session.secret));
   app.use(session(settings.session));
-  app.use(less({ src: dirs.publics }));
+  app.use(less(dirs.publics));
   app.use(sass({ src: dirs.publics }));
   app.use(express.static(dirs.publics));
 
