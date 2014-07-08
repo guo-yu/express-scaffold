@@ -63,9 +63,11 @@ function Server(configs) {
   var dbname =  dbs.mongodb.isMongodbUri(settings.database) ? dbs.mongodb.parseDbname(settings.database) : settings.database.name;
       
   if (settings.session.store) {
-    var options = settings.database.options || '';
-    var port = _.isNumber(setting.database.port) ? parseInt(setting.database.port, 10) || 27017
-    settings.session.store = new mongoStore({ db: dbname, port: port, options: options });
+    var host = settings.session.host || 'localhost';
+    var username = settings.database.options.user || '';
+    var password = settings.database.options.pass || '';
+    var port = _.isNumber(settings.session.port) ? parseInt(settings.database.port, 10) || 27017;
+    settings.session.store = new mongoStore({ db: dbname, host: host, port: port, username: username, password: password });
   }
 
   if (!settings.session.secret) {
