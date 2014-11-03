@@ -1,0 +1,1 @@
+exports.Schema = mongoose.Schema;
