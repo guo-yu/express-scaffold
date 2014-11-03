@@ -42,7 +42,9 @@
     "mongoose": "3.8.6",
     "morgan": "1.0.0",
     "multer": "0.0.7",
+    "mysql": "^2.5.2",
     "node-sass": "*",
+    "sequelize": "^2.0.0-rc2",
     "underscore": "~1.6.0"
   }
 }
