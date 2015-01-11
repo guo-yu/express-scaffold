@@ -32,7 +32,7 @@
     "cookie-parser": "1.0.1",
     "debug": "^2.1.0",
     "depender": "0.0.1",
-    "express": "4.3.0",
+    "express": "4.10.7",
     "express-common-errors": "*",
     "express-passport": "*",
     "express-session": "1.0.2",
