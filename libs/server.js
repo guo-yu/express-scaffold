@@ -60,11 +60,14 @@ function Server(configs) {
   var devMode = !(env === 'production');
 
   var settings = _.extend(_.clone(defaults), configs || {});
-  var dbname =  dbs.mongodb.isMongodbUri(settings.database) ? 
-      dbs.mongodb.parseDbname(settings.database) : settings.database.name;
+  var dbname =  dbs.mongodb.isMongodbUri(settings.database) ? dbs.mongodb.parseDbname(settings.database) : settings.database.name;
       
   if (settings.session.store) {
-    settings.session.store = new mongoStore({ db: dbname });
+    var host = settings.session.host || 'localhost';
+    var username = settings.database.options.user || '';
+    var password = settings.database.options.pass || '';
+    var port = _.isNumber(settings.session.port) ? parseInt(settings.database.port, 10) || 27017;
+    settings.session.store = new mongoStore({ db: dbname, host: host, port: port, username: username, password: password });
   }
 
   if (!settings.session.secret) {
