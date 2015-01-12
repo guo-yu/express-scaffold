@@ -2,7 +2,7 @@
   "name": "express-scaffold",
   "version": "0.5.0",
   "description": "a simple and sexy MVC scaffold of Express",
-  "main": "lib/server.js",
+  "main": "index.js",
   "author": "turing <o.u.turing@gmail.com>",
   "license": "MIT",
   "scripts": {
