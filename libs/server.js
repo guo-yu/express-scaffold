@@ -48,22 +48,31 @@ function Server(configs) {
   var settings = _.extend(_.clone(defaults), configs || {});
 
   // Check database configs
-  var dbname =  databases.mongodb.isMongodbUri(settings.database) ? 
-    databases.mongodb.parseDbname(settings.database) : 
-    settings.database.name;
-      
-  if (settings.session.store) {
-    var host = settings.session.host || 'localhost';
-    var username = settings.database.options.user || '';
-    var password = settings.database.options.pass || '';
-    var port = _.isNumber(settings.session.port) ? 
-      parseInt(settings.database.port) : 27017;
+  if (settings.database) {
+    // Check if databse uri is a mongdob uri.
+    var database = settings.database = databases.mongodb.isMongodbUri(settings.database) ? 
+        databases.mongodb.parseMongodbUri(settings.database) : 
+        settings.database;
 
-    settings.session.store = new mongoStore({ db: dbname, host: host, port: port, username: username, password: password });
+    // Check if we are going to persist sessions in mongodb
+    if (database.type === 'mongodb' && settings.session.store && dependencies['connect-mongo'] && dependencies['express-session']) {
+      var storeOptions = {
+        db: database.name,
+        host: database.host || 'localhost',
+        port: database.port || 27017,
+        username: settings.database.options.user || '',
+        password: settings.database.options.pass || ''
+      };
+
+      // Create a mongo session store.
+      var mongoStore = dependencies['connect-mongo']({ 
+        session: dependencies['express-session']
+      });
+
+      // Replace store with a instance.
+      settings.session.store = new mongoStore(storeOptions);
+    }
   }
-
-  if (!settings.session.secret)
-    settings.session.secret = dbname;
 
   // Find `views` and `public` absolute path
   dirs.views = finder(configs, 'views');
@@ -97,7 +106,7 @@ function Server(configs) {
   if (dependencies['method-override'])
     app.use(dependencies['method-override'](settings['method-override'] || {}));
 
-  app.use(cookieParser(settings.session.secret));
+  app.use(cookieParser(settings.secret || settings.session.secret));
 
   // Session middleware
   if (dependencies['express-session'])
@@ -122,7 +131,7 @@ function Server(configs) {
   app.locals.URI = app.locals.URL;
 
   this.app = app;
-  this.deps = new depender;
+  this.deps = new depender();
   this.deps.define('debug', debug(settings.name));
   this.deps.define('express', express);
   this.deps.define('middlewares', middlewares);
@@ -130,7 +139,7 @@ function Server(configs) {
   this.settings = settings;
 
   if (settings.session.store)
-    this.deps.define('sessionStore', settings.session.store);
+    this.deps.define('mongoStore', settings.session.store);
 
   return this;
 }
@@ -140,9 +149,14 @@ function Server(configs) {
  * @param  {Function} fn [the callback function to return model object]
  */
 Server.prototype.models = function(fn) {
-  this.deps.define('Schema', databases.mongodb.Schema);
-  this.deps.define('db', databases.mongodb.connect(this.settings.database));
+  // Inject mongodb deps
+  if (this.settings.databases.type === 'mongodb') {
+    this.deps.define('Schema', databases.mongodb.Schema);
+    this.deps.define('db', databases.mongodb.connect(this.settings.database));
+  }
+
   this.deps.define('models', this.deps.use(fn));
+
   return this;
 };
 

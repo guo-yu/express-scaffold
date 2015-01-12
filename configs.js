@@ -39,6 +39,7 @@ exports.logformat = ":remote-addr|:date|:method|:url|:status|:res[content-length
 // a mongodb URI can be used to replace this object, e.g: 
 // exports.database = 'mongodb://user:pass@localhost:port/database';
 exports.database = {
+  type: 'mongodb',
   name: pkg.name
 };
 
