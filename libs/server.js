@@ -40,10 +40,14 @@ function Server(configs) {
   var dirs = {};
   var app = express();
 
+  // Check environment vars
   var env = process.env.NODE_ENV || 'development';
-  var devMode = !(env === 'production');
+  var production = (env === 'production');
 
+  // Merge custom config to default configs.
   var settings = _.extend(_.clone(defaults), configs || {});
+
+  // Check database configs
   var dbname =  databases.mongodb.isMongodbUri(settings.database) ? 
     databases.mongodb.parseDbname(settings.database) : 
     settings.database.name;
@@ -52,7 +56,9 @@ function Server(configs) {
     var host = settings.session.host || 'localhost';
     var username = settings.database.options.user || '';
     var password = settings.database.options.pass || '';
-    var port = _.isNumber(settings.session.port) ? parseInt(settings.database.port, 10) || 27017;
+    var port = _.isNumber(settings.session.port) ? 
+      parseInt(settings.database.port) : 27017;
+
     settings.session.store = new mongoStore({ db: dbname, host: host, port: port, username: username, password: password });
   }
 
@@ -70,17 +76,21 @@ function Server(configs) {
   app.set('view engine', settings['view engine']);
   app.set('port', process.env.PORT || 3000);
 
-  if (devMode) 
+  // Disable view chche in dev mode
+  if (!production) 
     app.set('view cache', false);
 
-  // Load express middlewares
-  app.use(logger(devMode ? 'dev' : settings.logformat));
+  // Logger handler
+  app.use(logger(production ? settings.logformat : 'dev'));
 
+  // Compression handler
   if (dependencies.compression)
     app.use(dependencies.compression());
 
+  // Request body parser
   app.use(bodyParser());
 
+  // Upload handler
   if (dependencies.multer)
     app.use(dependencies.multer({ dest: dirs.uploads }));
 
@@ -89,23 +99,27 @@ function Server(configs) {
 
   app.use(cookieParser(settings.session.secret));
 
+  // Session middleware
   if (dependencies['express-session'])
     app.use(dependencies['express-session'](settings.session));
 
+  // Less and Sass middleware
   if (dependencies['less-middleware'])
     app.use(dependencies['less-middleware'](dirs.publics));
-
   if (dependencies['node-sass-middleware'])
     app.use(dependencies['node-sass-middleware']({ src: dirs.publics }));
 
+  // Serve static files
   app.use(express.static(dirs.publics));
 
   // Expose locals to template engine
-  app.locals.sys = pkg;
-  app.locals.site = settings;
-  app.locals.settings = settings;
-  app.locals.url = devMode ? 'http://127.0.0.1:' + app.get('port') : settings.url;
-  app.locals.uri = app.locals.url;
+  app.locals.ENGINE = pkg;
+  app.locals.SITE = settings;
+  app.locals.SETTINGS = settings;
+  app.locals.URL = production ? 
+    (settings.url || settings.uri || 'http://127.0.0.1') :
+    'http://127.0.0.1:' + app.get('port');
+  app.locals.URI = app.locals.URL;
 
   this.app = app;
   this.deps = new depender;
@@ -130,7 +144,7 @@ Server.prototype.models = function(fn) {
   this.deps.define('db', databases.mongodb.connect(this.settings.database));
   this.deps.define('models', this.deps.use(fn));
   return this;
-}
+};
 
 /**
  * [Init Controllers instances]
@@ -140,7 +154,7 @@ Server.prototype.controllers = function(fn) {
   this.deps.define('Controller', controllers.mongoose);
   this.deps.define('controllers', this.deps.use(fn));
   return this;
-}
+};
 
 /**
  * [Init routes]
@@ -156,7 +170,7 @@ Server.prototype.routes = function(fn) {
 
   this.app.all('*', middlewares.errors.notfound); // 404
   return this;
-}
+};
 
 // Start server instance
 Server.prototype.run = function() {
@@ -172,6 +186,4 @@ Server.prototype.run = function() {
   );
 
   return app.listen(app.get('port'));
-}
-
-Server.prototype.listen = Server.prototype.run;
+};

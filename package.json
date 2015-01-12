@@ -6,7 +6,7 @@
   "author": "turing <o.u.turing@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "node app.js",
+    "example": "DEBUG=express-scaffold,express-scaffold:* node examples/hello-world.js",
     "test": "DEBUG=*,-express:*,-dev:* node examples/app.js"
   },
   "repository": {

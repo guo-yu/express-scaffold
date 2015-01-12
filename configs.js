@@ -40,7 +40,7 @@ exports.logformat = ":remote-addr|:date|:method|:url|:status|:res[content-length
 // exports.database = 'mongodb://user:pass@localhost:port/database';
 exports.database = {
   name: pkg.name
-}
+};
 
 // the session infomation
 // by default, express-scaffold using connect-mongo to presist sessions.
@@ -50,4 +50,4 @@ exports.session = {
   // enable `session.store` to presist sessions,
   // by default, express-scaffold would not store sessions into databases.
   store: false
-}
+};
