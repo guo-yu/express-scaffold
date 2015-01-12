@@ -149,7 +149,9 @@ function Server(configs) {
  * @param  {Function} fn [the callback function to return model object]
  */
 Server.prototype.models = function(fn) {
-  // Inject mongodb deps
+  if (!this.settings.databases)
+    return this;
+
   if (this.settings.databases.type === 'mongodb') {
     this.deps.define('Schema', databases.mongodb.Schema);
     this.deps.define('db', databases.mongodb.connect(this.settings.database));
@@ -165,8 +167,14 @@ Server.prototype.models = function(fn) {
  * @param  {Function} fn [the callback function to return spec controllers]
  */
 Server.prototype.controllers = function(fn) {
-  this.deps.define('Controller', controllers.mongoose);
+  if (!this.settings.databases)
+    return this;
+
+  if (this.settings.databases.type === 'mongodb')
+    this.deps.define('Controller', controllers.mongoose);
+
   this.deps.define('controllers', this.deps.use(fn));
+
   return this;
 };
 
