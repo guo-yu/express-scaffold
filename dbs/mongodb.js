@@ -5,8 +5,8 @@ var defaults = require('../configs');
 
 exports.connect = connect;
 exports.Schema = mongoose.Schema;
-exports.parseDbname = parseDbname;
 exports.isMongodbUri = isMongodbUri;
+exports.parseMongodbUri = parseMongodbUri;
 
 function connect(db) {
   // if database is a `mongodb://` URI, init by this URI.
@@ -22,7 +22,7 @@ function connect(db) {
   return mongoose.createConnection(host, dbname, port, options);
 }
 
-function parseDbname(dbstr) {
+function parseName(dbstr) {
   if (!dbstr) 
     return defaults.database.name;
 
@@ -39,6 +39,13 @@ function parseDbname(dbstr) {
     return dburi;
 
   return dburi.substr(0, questionDevider);
+}
+
+function parseMongodbUri(str) {
+  return {
+    name: parseName(str),
+    type: 'mongodb'
+  };
 }
 
 function isMongodbUri(str) {
