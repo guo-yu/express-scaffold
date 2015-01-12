@@ -1,5 +1,5 @@
 // require Server class
-var Server = require('../index');
+var Server = require('..');
 
 // create app instance and chain all stuff together,
 // as you can see, express-scaffold injects models and ctrlers into
