@@ -97,7 +97,10 @@ function Server(configs) {
     app.use(dependencies.compression());
 
   // Request body parser
-  app.use(bodyParser());
+  // Parse `application/x-www-form-urlencoded`
+  app.use(bodyParser.urlencoded({ extended: false }));
+  // Parse `application/json`
+  app.use(bodyParser.json())
 
   // Upload handler
   if (dependencies.multer)
