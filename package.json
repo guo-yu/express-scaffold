@@ -45,8 +45,6 @@
     "jade": "1.8.2",
     "less-middleware": "1.0.4",
     "mongoose": "3.8.21",
-    "mysql": "^2.5.2",
-    "node-sass-middleware": "^0.4.0",
-    "sequelize": "^2.0.0-rc7"
+    "node-sass-middleware": "^0.4.0"
   }
 }
