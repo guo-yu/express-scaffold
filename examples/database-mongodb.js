@@ -6,7 +6,7 @@ var Server = require('..');
 // app instance, it is a convenience way to organize all resource and modules
 // which almost every route needs.
 new Server({
-  name: 'myApp',
+  name: 'express-scaffold:example:mongodb',
   publics: './public',
   uploads: './uploads',
   // database: 'mongodb://localhost:27017/appdb',
